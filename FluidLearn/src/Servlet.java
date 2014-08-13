@@ -84,10 +84,7 @@ public class Servlet extends HttpServlet {
 			forward(request,response,"/corso.jsp");
 		}
 		else if(operazione.equals("modificaCorso")){
-			Corso corso = CorsoController.creaCorso(request);
-			String idCorso = request.getParameter("idCorso");
-			corso.setIdCorso(Integer.parseInt(idCorso));
-			DatabaseController.UpdateCorso(corso);
+			Corso corso = CorsoController.modificaCorso(request);
 			String content = HtmlCorso.mostraCorso(corso.getIdCorso());
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
@@ -110,17 +107,14 @@ public class Servlet extends HttpServlet {
 			forward(request,response,"/corso.jsp");
 		}
 		else if(operazione.equals("eliminaCorso")){
-			String idCorso = request.getParameter("idCorso");
-			Corso corso = DatabaseController.SelectCorso(Integer.parseInt(idCorso));
-			boolean succes = DatabaseController.DeleteCorso(Integer.parseInt(idCorso));
+			boolean succes = CorsoController.eliminaCorso(request);
 			String content;
-			if(!succes) content ="<p> ho eliminato con successo il corso "+corso.getNome()+"</p>";
-			else content ="<p> non ho eliminato con successo il corso "+corso.getNome()+"</p>";
+			if(!succes) content ="<p> ho eliminato con successo il corso </p>";
+			else content ="<p> non ho eliminato con successo il corso </p>";
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
-			
 		}
 	}
 	
