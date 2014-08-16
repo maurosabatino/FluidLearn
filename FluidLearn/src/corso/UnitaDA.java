@@ -1,6 +1,6 @@
 package corso;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 
 public class UnitaDA {
@@ -23,8 +23,8 @@ public class UnitaDA {
 	public Date getData() {
 		return data;
 	}
-	public void setData(Date data) {
-		this.data = data;
+	public void setData(Date date) {
+		this.data = date;
 	}
 	public int getIdUDA() {
 		return idUDA;

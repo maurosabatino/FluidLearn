@@ -2,6 +2,7 @@
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -41,6 +42,9 @@ public class Servlet extends HttpServlet {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -53,12 +57,15 @@ public class Servlet extends HttpServlet {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
 	
 	
-	public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+	public void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
 		String operazione = request.getParameter("operazione");
 		if(operazione.equals("formInserisciCorso")){
 			String content = HtmlCorso.formInsertCorso();
@@ -115,6 +122,22 @@ public class Servlet extends HttpServlet {
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formInserisciUDA")){
+			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
+			String content = HtmlCorso.formInsertUDA(idCorso);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");			
+		}
+		else if(operazione.equals("inserisciUDA")){
+			UnitaDA UDA = CorsoController.nuovaUDA(request);
+			String content = HtmlCorso.mostraUDA(UDA.getIdUDA());
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");	
 		}
 	}
 	
