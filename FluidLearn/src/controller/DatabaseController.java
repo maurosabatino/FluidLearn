@@ -3,6 +3,7 @@ package controller;
 
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 import corso.*;
 
@@ -114,7 +116,7 @@ public class DatabaseController {
 	}
 	public static UnitaDA updateUDA(UnitaDA UDA) throws SQLException{
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "update corso set nome = ?, descrizione = ?, idcorso = ?, dataattivazione = ? where iduda = ?";
+		String sql = "update uda set nome = ?, descrizione = ?, idcorso = ?, dataattivazione = ? where iduda = ?";
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ps.setString(1, UDA.getNome());
 		ps.setString(2,UDA.getDescrizione());
@@ -140,7 +142,6 @@ public class DatabaseController {
 		UnitaDA UDA = new UnitaDA(); 
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
 		String sql = "select * from uda where iduda = "+idUDA+"";
-		System.out.println("select * from uda where iduda = "+idUDA+"");
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
@@ -155,4 +156,53 @@ public class DatabaseController {
 		conn.close();
 		return UDA; 
 	}
+	public static ArrayList<UnitaDA> selectAllUDA() throws SQLException{
+		ArrayList<UnitaDA> ListUDA = new ArrayList<UnitaDA>();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select * from uda";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			UnitaDA UDA = new UnitaDA(); 
+			UDA.setNome(rs.getString("nome"));
+			UDA.setDescrizione(rs.getString("descrizione"));
+			UDA.setIdCorso(rs.getInt("idcorso"));
+			UDA.setData(rs.getTimestamp("dataattivazione"));
+			UDA.setIdUDA(rs.getInt("iduda"));
+			ListUDA.add(UDA);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return ListUDA;
+	}
+	
+	//UC_gestirePercorsoDiApprendimento
+	
+	//aggiungiPercorso
+	
+	//rimuoviPercorso
+	
+	public static void attivaUDA(int idUDA) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "update uda set dataattivazione = ? where iduda = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		GregorianCalendar gc = new GregorianCalendar();
+		ps.setTimestamp(1,new Timestamp(gc.getTime().getTime()));
+		ps.setInt(2, idUDA);
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+	}
+	public static void disattivaUDA(int idUDA) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "update uda set dataattivazione = ? where iduda = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setTimestamp(1,new Timestamp(0));
+		ps.setInt(2, idUDA);
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+	}
+	
 }
