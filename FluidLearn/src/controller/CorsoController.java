@@ -70,5 +70,36 @@ public class CorsoController {
 		UDA.setIdUDA(Integer.parseInt(idUDA));
 		return DatabaseController.updateUDA(UDA);
 	}
+	public static boolean deleteUDA(HttpServletRequest request) throws NumberFormatException, SQLException{
+		String idUDA = request.getParameter("idUDA");
+		return DatabaseController.deleteUDA(Integer.parseInt(idUDA));
+	}
+	
+	/*------nodo di apprendimento-------------*/
+	public static Nodo inputNodo(HttpServletRequest request){
+		Nodo nodo = new NodoLeaf();
+		if(!(request.getParameter("idUDA")==null))
+			nodo.setIdUDA(Integer.parseInt(request.getParameter("idUDA")));
+		if(!(request.getParameter("nome")==null))
+			nodo.setNome(request.getParameter("nome"));
+		if(!(request.getParameter("descrizione")==null))
+			nodo.setDescrizione(request.getParameter("descrizione"));
+		return nodo;
+	}
+	public static Nodo nuovoNodo(HttpServletRequest request) throws SQLException{
+		return DatabaseController.insertNodo(inputNodo(request));
+	}
+	public static Nodo inputNodoLeaf(HttpServletRequest request) throws SQLException{
+		int idNodo = Integer.parseInt(request.getParameter("idNodoPadre"));
+		Nodo nodo = new NodoComposite();
+		nodo.setIdNodo(idNodo);
+		Nodo nd = inputNodo(request);
+		((NodoComposite)nodo).addNodo(nd);
+		return nodo;
+	}
+	public static Nodo nuovoNodoLeaf(HttpServletRequest request) throws SQLException{
+		return DatabaseController.insertNodoLeaf(inputNodoLeaf(request));
+	}
+	
 	
 }

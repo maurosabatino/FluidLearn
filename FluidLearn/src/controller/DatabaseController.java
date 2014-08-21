@@ -156,10 +156,10 @@ public class DatabaseController {
 		conn.close();
 		return UDA; 
 	}
-	public static ArrayList<UnitaDA> selectAllUDA() throws SQLException{
+	public static ArrayList<UnitaDA> selectAllUDA(int idCorso) throws SQLException{
 		ArrayList<UnitaDA> ListUDA = new ArrayList<UnitaDA>();
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select * from uda";
+		String sql = "select * from uda where idcorso = "+idCorso+"";
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
@@ -204,5 +204,104 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 	}
+	
+	/*---------nodo-----------*/
+	public static Nodo insertNodo(Nodo nodo) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "insert into nodo(nome,descrizione,iduda,iscomposite) values (?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+		ps.setString(1, nodo.getNome());
+		ps.setString(2, nodo.getDescrizione());
+		ps.setInt(3, nodo.getIdUDA());
+		ps.setBoolean(4, false); //sempre false perchè di base si crea sempre una foglia
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		while (rs.next())
+			nodo.setIdNodo(rs.getInt("idnodo"));
+		rs.close();
+		ps.close();
+		conn.close();
+		return nodo;
+	}
+	public static Nodo insertNodoLeaf(Nodo nodo) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		PreparedStatement ps = conn.prepareStatement("update nodo set iscomposite=true where idnodo="+nodo.getIdNodo()+"");
+		PreparedStatement composto = null;
+		ps.execute();
+		for(Nodo nd :((NodoComposite)nodo).getNodi()){
+			nd = insertNodo(nd);
+			 composto = conn.prepareStatement("insert into nodocomposto(idnodopadre,idnodofiglio) values(?,?)");
+			composto.setInt(1,nodo.getIdNodo());
+			composto.setInt(2, nd.getIdNodo());
+			composto.executeUpdate();
+		}
+		composto.close();
+		ps.close();
+		conn.close();
+		return nodo;
+	}
+	
+	public static Nodo selectNodo(int idNodo) throws SQLException{
+		Nodo nodo= null; 
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select * from nodo where idnodo = "+idNodo+"";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			if(rs.getBoolean("iscomposite")) {
+				nodo = new NodoComposite();
+				((NodoComposite)nodo).setNodi(selectNodiLeaf(idNodo));
+			}
+			else nodo = new NodoLeaf();
+			nodo.setNome(rs.getString("nome"));
+			nodo.setDescrizione(rs.getString("descrizione"));
+			nodo.setIdUDA(rs.getInt("iduda"));
+			
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return nodo; 
+	}
+	
+	public static ArrayList<Nodo> selectAllNodi(int idUDA) throws SQLException{
+		ArrayList<Nodo> ListNodi = new ArrayList<Nodo>();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select * from nodo where iduda = "+idUDA+"";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Nodo nodo;
+			if(rs.getBoolean("iscomposite")) nodo = new NodoComposite();
+			else nodo = new NodoLeaf(); 
+			nodo.setNome(rs.getString("nome"));
+			nodo.setDescrizione(rs.getString("descrizione"));
+			nodo.setIdNodo(rs.getInt("idNodo"));
+			nodo.setIdUDA(rs.getInt("iduda"));
+			ListNodi.add(nodo);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return ListNodi;
+	}
+	public static ArrayList<Nodo> selectNodiLeaf(int idNodo) throws SQLException{
+		ArrayList<Nodo> nodiLeaf = new ArrayList<Nodo>();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select idnodofiglio from nodocomposto where idnodopadre = "+idNodo+"";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Nodo nodo = selectNodo(rs.getInt("idnodofiglio"));
+			nodiLeaf.add(nodo);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return nodiLeaf;
+		
+	}
+	
+	/*----------post-------------*/
 	
 }

@@ -8,7 +8,11 @@ public class NodoComposite implements Nodo {
 	private String nome;
 	private String descrizione;
 	private int idUDA;
-	private ArrayList<Integer> nodi;
+	private ArrayList<Nodo> nodi;
+	
+	public NodoComposite(){
+		nodi = new ArrayList<Nodo>();
+	}
 	@Override
 	public int getIdNodo() {
 		return idNodo;
@@ -46,16 +50,16 @@ public class NodoComposite implements Nodo {
 		return true;
 	}
 	
-	public ArrayList<Integer> getNodi(){
+	public ArrayList<Nodo> getNodi(){
 		return nodi;
 	}
 	
-	public void setNodi(ArrayList<Integer> nodi){
+	public void setNodi(ArrayList<Nodo> nodi){
 		this.nodi = nodi;
 	}
 
-	public void addNodo(int idNodo){
-		nodi.add(idNodo);
+	public void addNodo(Nodo Nodo){
+		nodi.add(Nodo);
 	}
 	
 	

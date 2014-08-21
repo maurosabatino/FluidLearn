@@ -139,6 +139,63 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");	
 		}
+		else if(operazione.equals("mostraUDACorso")){
+			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
+			String content = HtmlCorso.mostraUDACorso(idCorso);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formInserisciNodo")){
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			String content = HtmlCorso.formInsertNodo(idUDA);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");	
+		}
+		else if(operazione.equals("inserisciNodo")){
+			Nodo nodo = CorsoController.nuovoNodo(request);
+			String content = HtmlCorso.mostraNodiUDA(nodo.getIdUDA());
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("mostraNodiUDA")){
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			String content = HtmlCorso.mostraNodiUDA(idUDA);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formInserisciNodoLeaf")){
+			int idNodoPadre = Integer.parseInt(request.getParameter("idNodoPadre"));
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			String content = HtmlCorso.formInsertNodoLeaf(idUDA,idNodoPadre);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");	
+		}
+		else if(operazione.equals("inserisciNodoLeaf")){
+			Nodo nodo = CorsoController.nuovoNodoLeaf(request);
+			String content = HtmlCorso.mostraNodiLeaf(nodo.getIdNodo());
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("mostraNodiLeaf")){
+			int idNodoPadre = Integer.parseInt(request.getParameter("idNodoPadre"));
+			String content = HtmlCorso.mostraNodiLeaf(idNodoPadre);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
 	}
 	
 	

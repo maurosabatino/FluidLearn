@@ -15,6 +15,5 @@ public interface Azione {
 	public void setCorpo(Corpo corpo);
 	public Date getData();
 	public void setData(Date d);
-	public void setData(long d);
 	public boolean hasDeadline();
 }
