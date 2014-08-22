@@ -2,17 +2,10 @@ package controller;
 
 
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
+import java.sql.*;
+import java.util.*;
 
+import contributo.*;
 import corso.*;
 
 public class DatabaseController {
@@ -304,4 +297,46 @@ public class DatabaseController {
 	
 	/*----------post-------------*/
 	
+	public static Azione insertAzione(Azione azione) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "insert into post(idPartecipante,idNodo,testo,data,deadline,idplugin) values (?,?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1, azione.getIDPartecipante());
+		ps.setInt(2, azione.getIDNodo());
+		ps.setString(3, azione.getCorpo().getText());
+		Timestamp t= new Timestamp(azione.getData().getTime());
+		ps.setTimestamp(4,t);
+		if(azione.hasDeadline()) ps.setTimestamp(5, new Timestamp(((Sollecitazione)azione).getDeadline().getTime()));
+		else ps.setNull(5, Types.TIMESTAMP);
+		if(azione.getCorpo().hasPlugin()) ps.setInt(6, ((Artefatto)azione).getIdPlugin());
+		else ps.setNull(6,Types.INTEGER);
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		while (rs.next())
+			azione.setIDPost(rs.getInt("idpost"));
+		rs.close();
+		ps.close();
+		conn.close();
+		return azione;
+	}
+	public static ArrayList<Azione> selectAllPostNodo(int idNodo) throws SQLException{
+		ArrayList<Azione> postNodo = new ArrayList<Azione>();
+		String sql = "select * from post where idnodo = "+idNodo+" and idplugin is  NULL and deadline is null";
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Azione post = new Post();
+			post.setIDPost(rs.getInt("idpost"));
+			post.setData(rs.getTime("data"));
+			Corpo testo = new Testo();
+			testo.setText(rs.getString("testo"));
+			post.setCorpo(testo);
+			postNodo.add(post);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return postNodo;
+	}
 }

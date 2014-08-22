@@ -2,7 +2,7 @@ package contributo;
 
 import java.util.Date;
 
-public class Sollecitazione {
+public class Sollecitazione implements Azione {
 	int IDPost;
 	int IDPartecipante;
 	int visibilita;

@@ -12,10 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import contributo.Azione;
+import controller.ContributoController;
 import controller.CorsoController;
 import controller.DatabaseController;
 import corso.*;
 import bean.HtmlContent;
+import InterfacciaHtml.HtmlContributo;
 import InterfacciaHtml.HtmlCorso;
 
 /**
@@ -191,6 +194,29 @@ public class Servlet extends HttpServlet {
 		else if(operazione.equals("mostraNodiLeaf")){
 			int idNodoPadre = Integer.parseInt(request.getParameter("idNodoPadre"));
 			String content = HtmlCorso.mostraNodiLeaf(idNodoPadre);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}else if(operazione.equals("formInserisciPost")){
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			String content = HtmlContributo.formInputPost(idNodo);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");	
+		}
+		else if(operazione.equals("inserisciPost")){
+			Azione post = ContributoController.nuovaAzione(request);
+			String content = HtmlContributo.mostraPostNodo(post.getIDNodo());
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("mostraPostNodo")){
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			String content = HtmlContributo.mostraPostNodo(idNodo);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);

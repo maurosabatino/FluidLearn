@@ -173,6 +173,8 @@ public class HtmlCorso {
 				sb.append("<tr><td>"+nomeUDA+"</td><td>"+nodo.getNome()+"</td><td>"+nodo.getDescrizione()+"</td>");
 				sb.append("<td><a href=\"Servlet?operazione=formInserisciNodoLeaf&idNodoPadre="+nodo.getIdNodo()+"&idUDA="+idUDA+"\"> aggiungi Nodo</a></td>");
 				sb.append("<td><a href=\"Servlet?operazione=mostraNodiLeaf&idNodoPadre="+nodo.getIdNodo()+"\"> mostra nodi figli</a></td>");
+				sb.append("<td><a href=\"Servlet?operazione=formInserisciPost&idNodo="+nodo.getIdNodo()+"\"> pubblica un post</a></td>");
+				sb.append("<td><a href=\"Servlet?operazione=mostraPostNodo&idNodo="+nodo.getIdNodo()+"\"> visualizza i post</a></td>");
 				sb.append("</tr>");
 			}
 		}
