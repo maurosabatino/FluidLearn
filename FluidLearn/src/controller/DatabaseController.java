@@ -319,6 +319,33 @@ public class DatabaseController {
 		conn.close();
 		return azione;
 	}
+	public static Azione selectPost(int idPost) throws SQLException{
+		Azione contributo = new Post();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select * from post where idpost = "+idPost+"";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			Corpo corpo;
+			if(rs.getInt("idplugin")!=0){
+				corpo = new Artefatto();
+				((Artefatto)corpo).setIdPlugin(rs.getInt("idplugin"));
+			}
+			else corpo = new Testo();
+			corpo.setText(rs.getString("testo"));
+			if(rs.getTimestamp("deadline")!=null){
+				contributo = new Sollecitazione();
+				((Sollecitazione)contributo).setDeadline(rs.getTimestamp("deadline"));
+			}
+			contributo.setIDNodo(rs.getInt("idnodo"));
+			contributo.setIDPartecipante(rs.getInt("idpartecipante"));
+			contributo.setIDPost(rs.getInt("idpost"));			
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return contributo;
+	}
 	public static ArrayList<Azione> selectAllPostNodo(int idNodo) throws SQLException{
 		ArrayList<Azione> postNodo = new ArrayList<Azione>();
 		String sql = "select * from post where idnodo = "+idNodo+" and idplugin is  NULL and deadline is null";
@@ -338,5 +365,28 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 		return postNodo;
+	}
+	
+	/*------------------Commento-------------------*/
+	public static Reazione insertReazione(Reazione reazione) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "insert into commento(idpost,idpartecipante,testo,data,idplugin) values (?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1, reazione.getIDPost());
+		ps.setInt(2, reazione.getIDPartecipante());
+		ps.setString(3, reazione.getCorpo().getText());
+		Timestamp t= new Timestamp(reazione.getData().getTime());
+		ps.setTimestamp(4,t);
+		
+		if(reazione.getCorpo().hasPlugin()) ps.setInt(5, ((Artefatto)reazione).getIdPlugin());
+		else ps.setNull(5,Types.INTEGER);
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		while (rs.next())
+			reazione.setIDPost(rs.getInt("idpost"));
+		rs.close();
+		ps.close();
+		conn.close();
+		return reazione;
 	}
 }

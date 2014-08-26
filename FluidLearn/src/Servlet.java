@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import contributo.Azione;
+import contributo.Reazione;
 import controller.ContributoController;
 import controller.CorsoController;
 import controller.DatabaseController;
@@ -221,6 +222,9 @@ public class Servlet extends HttpServlet {
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("inserisciCommento")){
+			Reazione commento = ContributoController.nuovaReazione(request);
 		}
 	}
 	

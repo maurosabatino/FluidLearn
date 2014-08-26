@@ -38,17 +38,33 @@ public class HtmlCorso {
 	public static String mostraAllCorsi() throws SQLException{
 		ArrayList<Corso> corsi = DatabaseController.SelectAllCorso();
 		StringBuilder sb = new StringBuilder();
-		sb.append("<table class=\"table\">");
-		sb.append("<tr><th>nome</th><th>descrizione</th><th>modifica</th><th>elimina</th><th>aggiungi UDA</th><th>mostra UDA</th></tr>");
+		int column = 0;
+		//sb.append("<table class=\"table\">");
+		//sb.append("<tr><th>nome</th><th>descrizione</th><th>modifica</th><th>elimina</th><th>aggiungi UDA</th><th>mostra UDA</th></tr>");
 		for(Corso c : corsi){
-			sb.append("<tr><td>"+c.getNome()+"</td><td>"+c.getDescrizione()+"</td>");
-			sb.append("<td><a href=\"Servlet?operazione=formModificaCorso&idCorso="+c.getIdCorso()+"\"> modifica</a></td>");
+			System.out.println(column);
+			if(column%3==0)sb.append("	<div class=\"row\">                                                                                                                       ");
+		sb.append("	  <div class=\"col-sm-6 col-md-4\">                                                                                                       ");
+		sb.append("	    <div class=\"thumbnail\">                                                                                                             ");
+		sb.append("	      <img src=\"images/STUDENT_img.jpg\" alt=\"Generic placeholder thumbnail\">                                                                                      ");
+		sb.append("	      <div class=\"caption\">                                                                                                             ");
+		sb.append("	        <h3>"+c.getNome()+"</h3>                                                                                                        ");
+		sb.append("	        <p>"+c.getDescrizione()+"</p>                                                                                                                      ");
+		sb.append("	        <p><a href=\"Servlet?operazione=mostraUDACorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary\" role=\"button\">Mostra UDA</a> <a href=\"#\" class=\"btn btn-default\" role=\"button\">Button</a></p>");
+		sb.append("	      </div>                                                                                                                            ");
+		sb.append("	    </div>                                                                                                                              ");
+		sb.append("	  </div>                                                                                                                                ");
+		if((column+1)%3==0)sb.append("	</div>                                                                                                                                  ");
+			column++;
+			
+			
+			/*sb.append("<td><a href=\"Servlet?operazione=formModificaCorso&idCorso="+c.getIdCorso()+"\"> modifica</a></td>");
 			sb.append("<td><a href=\"Servlet?operazione=eliminaCorso&idCorso="+c.getIdCorso()+"\"> elimina</a></td>");
 			sb.append("<td><a href=\"Servlet?operazione=formInserisciUDA&idCorso="+c.getIdCorso()+"\"> aggiungi UDA</a></td>");
 			sb.append("<td><a href=\"Servlet?operazione=mostraUDACorso&idCorso="+c.getIdCorso()+"\"> mostra UDA</a></td>");
-			sb.append("</tr>");
+			sb.append("</tr>");*/
 		}
-		sb.append("</table>");
+		//sb.append("</table>");
 			return sb.toString();
 	}
 	

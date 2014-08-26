@@ -37,4 +37,27 @@ public class ContributoController {
 	public static Azione nuovaAzione(HttpServletRequest request) throws SQLException, ParseException{
 		return DatabaseController.insertAzione(inputAzione(request));
 	}
+	public static Reazione inputReazione(HttpServletRequest request) throws SQLException{
+		Reazione contributo;
+		int idPost = Integer.parseInt(request.getParameter("idPost"));
+		Azione azione = DatabaseController.selectPost(idPost);
+		if(azione.hasDeadline())contributo = new Risposta();
+		else contributo = new Commento();
+		contributo.setIDPartecipante(1);//per ora è 1, poi quando ci saranno i partecipanti
+		Corpo corpo;
+		if(!(request.getParameter("idPlugin")==null)){
+			corpo = new Artefatto();
+			((Artefatto)corpo).setIdPlugin(Integer.parseInt(request.getParameter("idPlugin")));
+		}else{
+			corpo = new Testo();
+		}
+		corpo.setText(request.getParameter("testo"));
+		contributo.setCorpo(corpo);
+		contributo.setData(new Date());
+		contributo.setIDPost(azione.getIDPost());
+		return contributo;
+	}
+	public static Reazione nuovaReazione(HttpServletRequest request) throws SQLException, ParseException{
+		return DatabaseController.insertReazione((inputReazione(request)));
+	}
 }

@@ -10,8 +10,7 @@ public interface Reazione {
 	public int getIDPost();
 	public void setIDPost(int IDPost);
 	public Date getData();
-	public void setData(Date d);
-	public void setData(long d);
+	public void setData(Date data);
 	public Corpo getCorpo();
 	public void setCorpo(Corpo corpo);
 }
