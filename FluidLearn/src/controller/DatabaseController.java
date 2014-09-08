@@ -5,6 +5,7 @@ package controller;
 import java.sql.*;
 import java.util.*;
 
+import partecipante.*;
 import contributo.*;
 import corso.*;
 
@@ -235,7 +236,7 @@ public class DatabaseController {
 	}
 	
 	public static Nodo selectNodo(int idNodo) throws SQLException{
-		Nodo nodo= null; 
+		Nodo nodo= new NodoLeaf();; 
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
 		String sql = "select * from nodo where idnodo = "+idNodo+"";
 		PreparedStatement ps =  conn.prepareStatement(sql);
@@ -245,7 +246,7 @@ public class DatabaseController {
 				nodo = new NodoComposite();
 				((NodoComposite)nodo).setNodi(selectNodiLeaf(idNodo));
 			}
-			else nodo = new NodoLeaf();
+			nodo.setIdNodo(rs.getInt("idnodo"));
 			nodo.setNome(rs.getString("nome"));
 			nodo.setDescrizione(rs.getString("descrizione"));
 			nodo.setIdUDA(rs.getInt("iduda"));
@@ -260,40 +261,18 @@ public class DatabaseController {
 	public static ArrayList<Nodo> selectAllNodi(int idUDA) throws SQLException{
 		ArrayList<Nodo> ListNodi = new ArrayList<Nodo>();
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select * from nodo where iduda = "+idUDA+"";
+		String sql = "select * from nodo where iduda = "+idUDA+" and (iscomposite=true or idnodo not in (select idnodofiglio from nodocomposto))";
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
-			Nodo nodo;
-			if(rs.getBoolean("iscomposite")) nodo = new NodoComposite();
-			else nodo = new NodoLeaf(); 
-			nodo.setNome(rs.getString("nome"));
-			nodo.setDescrizione(rs.getString("descrizione"));
-			nodo.setIdNodo(rs.getInt("idNodo"));
-			nodo.setIdUDA(rs.getInt("iduda"));
-			ListNodi.add(nodo);
+			ListNodi.add(selectNodo(rs.getInt("idnodo")));
 		}
 		rs.close();
 		ps.close();
 		conn.close();
 		return ListNodi;
 	}
-	public static ArrayList<Nodo> selectNodiLeaf(int idNodo) throws SQLException{
-		ArrayList<Nodo> nodiLeaf = new ArrayList<Nodo>();
-		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select idnodofiglio from nodocomposto where idnodopadre = "+idNodo+"";
-		PreparedStatement ps =  conn.prepareStatement(sql);
-		ResultSet rs = ps.executeQuery();
-		while (rs.next()){
-			Nodo nodo = selectNodo(rs.getInt("idnodofiglio"));
-			nodiLeaf.add(nodo);
-		}
-		rs.close();
-		ps.close();
-		conn.close();
-		return nodiLeaf;
-		
-	}
+	
 	
 	/*----------post-------------*/
 	
@@ -318,6 +297,22 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 		return azione;
+	}
+	public static ArrayList<Nodo> selectNodiLeaf(int idNodo) throws SQLException{
+		ArrayList<Nodo> nodiLeaf = new ArrayList<Nodo>();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select idnodofiglio from nodocomposto where idnodopadre = "+idNodo+"";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Nodo nodo = selectNodo(rs.getInt("idnodofiglio"));
+			nodiLeaf.add(nodo);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return nodiLeaf;
+		
 	}
 	public static Azione selectPost(int idPost) throws SQLException{
 		Azione contributo = new Post();
@@ -388,5 +383,29 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 		return reazione;
+	}
+	
+	
+	
+	/*----------parteciapnte--------*/
+	public static Partecipante selectPartecipante(String username, String password) throws SQLException{
+	
+			Connection conn = DriverManager.getConnection(url,usr,pwd);
+			String sql = " select * from utente where username = ? and password = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, username);
+			ps.setString(2, password);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				Partecipante p = new PartecipanteConcreto();
+				p.setNome(rs.getString("username"));
+				p.setIDPartecipante(rs.getInt("idutente"));
+				return p;
+			}
+			ps.close();
+			rs.close();
+			conn.close();
+			return null;
+		
 	}
 }

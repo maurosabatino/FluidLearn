@@ -18,12 +18,36 @@
 
 <jsp:include page="navbar.jsp"></jsp:include>
 
+<jsp:include page="barraLaterale.jsp"></jsp:include>
+
 <div class="col-sm-9  col-md-10 col-md-offset-1 main">
 
 <a href="Servlet?operazione=formInserisciCorso"> inserisci Corso</a>
 <a href="Servlet?operazione=mostraAllCorsi"> mostra i Corsi</a>
 <jsp:getProperty name="HTMLc" property="content"/>
 
+
+
+
+                            
+
 </div>
+<script>
+    $('#nodoTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    // store the currently selected tab in the hash value
+    $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+        var id = $(e.target).attr("href").substr(1);
+        window.location.hash = id;
+    });
+
+    // on load of the page: switch to the currently selected tab
+    var hash = window.location.hash;
+    $('#nodoTab a[href="' + hash + '"]').tab('show');
+</script>
+
 </body>
 </html>

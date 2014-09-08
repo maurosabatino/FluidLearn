@@ -17,7 +17,7 @@ public class HtmlCorso {
 		sb.append("</div>");
 		sb.append("<br><div class=\"wrapper\">");
 		sb.append("<div class=\"content-main\"><label for=\"descrizione\">Descrizione</label></div>");
-		sb.append("<div class=\"content-secondary\"><textarea rows=\"5\" cols=\"140\" name=\"descrizione\" id=\"descrizione\" class=\"textarea\" placeholder=\"Descrizione\"></textarea></div>");
+		sb.append("<div class=\"content-secondary\"><textarea rows=\"5\" cols=\"140\" name=\"descrizione\" id=\"descrizione\" class=\"textarea\" placeholder=\"Descrizione\">Max 36 caratteri</textarea></div>");
 		sb.append("</div>");
 		sb.append("<input type=\"hidden\" name=\"operazione\" value=\"inserisciCorso\">");
 		sb.append("<input type=\"submit\" name =\"submit\" value=\"OK\">");
@@ -46,11 +46,11 @@ public class HtmlCorso {
 			if(column%3==0)sb.append("	<div class=\"row\">                                                                                                                       ");
 		sb.append("	  <div class=\"col-sm-6 col-md-4\">                                                                                                       ");
 		sb.append("	    <div class=\"thumbnail\">                                                                                                             ");
-		sb.append("	      <img src=\"images/STUDENT_img.jpg\" alt=\"Generic placeholder thumbnail\">                                                                                      ");
+		sb.append("	      <img src=\"images/STUDENT_img.jpg\" alt=\"Immagine del corso\">                                                                                      ");
 		sb.append("	      <div class=\"caption\">                                                                                                             ");
 		sb.append("	        <h3>"+c.getNome()+"</h3>                                                                                                        ");
 		sb.append("	        <p>"+c.getDescrizione()+"</p>                                                                                                                      ");
-		sb.append("	        <p><a href=\"Servlet?operazione=mostraUDACorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary\" role=\"button\">Mostra UDA</a> <a href=\"#\" class=\"btn btn-default\" role=\"button\">Button</a></p>");
+		sb.append("	        <p class=\"text-center\"><a href=\"Servlet?operazione=mostraUDACorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary\" role=\"button\">Entra</a></p>");
 		sb.append("	      </div>                                                                                                                            ");
 		sb.append("	    </div>                                                                                                                              ");
 		sb.append("	  </div>                                                                                                                                ");
@@ -126,15 +126,29 @@ public class HtmlCorso {
 		StringBuilder sb = new StringBuilder();
 		ArrayList<UnitaDA> UDACorso = DatabaseController.selectAllUDA(idCorso);
 		String nomeCorso = DatabaseController.SelectCorso(idCorso).getNome();
-		sb.append("<table class=\"table\">");
-		sb.append("<tr><th>corso</th><th>UDA</th><th>descrizione</th><th>data attivazione</th><th>aggiungi nodo</th><th>mostra nodi</th></tr>");
+		sb.append("<h3>unità di apprendimento di "+nomeCorso+"</h3>");
 		for(UnitaDA UDA:UDACorso){
-			sb.append("<tr><td>"+nomeCorso+"</td><td>"+UDA.getNome()+"</td><td>"+UDA.getDescrizione()+"</td><td>"+UDA.getData()+"</td> ");
-			sb.append("<td><a href=\"Servlet?operazione=formInserisciNodo&idUDA="+UDA.getIdUDA()+"\"> aggiungi Nodo</a></td>");
-			sb.append("<td><a href=\"Servlet?operazione=mostraNodiUDA&idUDA="+UDA.getIdUDA()+"\"> mostra i Nodi</a></td>");
-			sb.append("</tr>");
+			
+			sb.append("<div class=\"row\">                                                                                                                         ");
+			sb.append("  <div class=\"col-sm-6 col-md-4\">                                                                                                         ");
+			sb.append("    <div class=\"thumbnail\">                                                                                                               ");
+			sb.append("                                                                                                                                          ");
+			sb.append("      <div class=\"caption\">                                                                                                               ");
+			sb.append("        <h3>"+UDA.getNome()+"</h3>                                                                                                          ");
+			sb.append("        <p>"+UDA.getDescrizione()+"</p>                                                                                                                        ");
+			sb.append("        <p><a href=\"Servlet?operazione=mostraNodiUDA&idUDA="+UDA.getIdUDA()+"\" class=\"btn btn-primary\" role=\"button\">Mostra i Nodi</a> </p>  ");
+			sb.append("      </div>                                                                                                                              ");
+			sb.append("    </div>                                                                                                                                ");
+			sb.append("  </div>                                                                                                                                  ");
+			sb.append("</div>																																	 ");
+			
+			
+			
+			//sb.append("<td><a href=\"Servlet?operazione=formInserisciNodo&idUDA="+UDA.getIdUDA()+"\"> aggiungi Nodo</a></td>");
+			//sb.append("<td><a href=\"Servlet?operazione=mostraNodiUDA&idUDA="+UDA.getIdUDA()+"\"> mostra i Nodi</a></td>");
+			
 		}
-		sb.append("</table>");
+		
 		return sb.toString();		
 	}
 	
@@ -182,19 +196,34 @@ public class HtmlCorso {
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Nodo> NodiUDA = DatabaseController.selectAllNodi(idUDA);
 		String nomeUDA = DatabaseController.selectUDA(idUDA).getNome();
-		sb.append("<table class=\"table\">");
-		sb.append("<tr><th>UDA</th><th>nome</th><th>descrizione</th><th>aggiungi un nodo figlio</th><th>mostra i nodi figli</th></tr>");
+		sb.append("<h3>nodi dell'unità di apprendimento "+nomeUDA+"</h3>");
 		for(Nodo nodo:NodiUDA){
-			if(nodo.isComposite()){
+			sb.append("<div class=\"row\">                                                                                                                         ");
+			sb.append("  <div class=\"col-sm-6 col-md-4\">                                                                                                         ");
+			sb.append("    <div class=\"thumbnail\">                                                                                                               ");
+			sb.append("                                                                                                                                          ");
+			sb.append("      <div class=\"caption\">                                                                                                               ");
+			sb.append("        <h3>"+nodo.getNome()+"</h3>                                                                                                          ");
+			sb.append("        <p>"+nodo.getDescrizione()+"</p>                                                                                                                        ");
+			sb.append("<p><a href=\"Servlet?operazione=mostraNodo&idNodo="+nodo.getIdNodo()+"#post \" class=\"btn btn-primary\" role=\"button\">Entra</a> </p>  ");
+			sb.append("      </div>                                                                                                                              ");
+			sb.append("    </div>                                                                                                                                ");
+			sb.append("  </div>                                                                                                                                  ");
+			sb.append("</div>																																	 ");
+			
+			
+			
+			
+			/*if(nodo.isComposite()){
 				sb.append("<tr><td>"+nomeUDA+"</td><td>"+nodo.getNome()+"</td><td>"+nodo.getDescrizione()+"</td>");
 				sb.append("<td><a href=\"Servlet?operazione=formInserisciNodoLeaf&idNodoPadre="+nodo.getIdNodo()+"&idUDA="+idUDA+"\"> aggiungi Nodo</a></td>");
 				sb.append("<td><a href=\"Servlet?operazione=mostraNodiLeaf&idNodoPadre="+nodo.getIdNodo()+"\"> mostra nodi figli</a></td>");
 				sb.append("<td><a href=\"Servlet?operazione=formInserisciPost&idNodo="+nodo.getIdNodo()+"\"> pubblica un post</a></td>");
 				sb.append("<td><a href=\"Servlet?operazione=mostraPostNodo&idNodo="+nodo.getIdNodo()+"\"> visualizza i post</a></td>");
 				sb.append("</tr>");
-			}
+			}*/
 		}
-		sb.append("</table>");
+		
 		return sb.toString();		
 	}
 	public static String mostraNodiLeaf(int idNodoPadre) throws SQLException{
@@ -208,5 +237,53 @@ public class HtmlCorso {
 		}
 		sb.append("</table>");
 		return sb.toString();	
+	}
+	public static String mostraNodo(int idNodo) throws SQLException{
+		StringBuilder sb = new StringBuilder();
+		Nodo nd = DatabaseController.selectNodo(idNodo);
+		//sb.append(scriptSelectTag());
+		sb.append("<h3>"+nd.getNome()+"</h3>");
+		sb.append("<ul id=\"nodoTab\" class=\"nav nav-tabs\">                                     ");
+		sb.append("   <li>                                                     ");
+		sb.append("      <a href=\"#home\" data-toggle=\"tab\">                                 ");
+		sb.append("          Decrizione                                                         ");
+		sb.append("      </a>                                                                   ");
+		sb.append("   </li>                                                                     ");
+		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
+		sb.append("   <li><a href=\"#risorse\" data-toggle=\"tab\">Risorse</a></li>             ");
+		sb.append("</ul>                                                                        ");
+		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
+		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");
+		sb.append("      <p>"+nd.getDescrizione()+"</p>   							            ");
+		sb.append("   </div>                                                                    ");
+		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
+		sb.append("      <p> "+HtmlContributo.mostraPostNodo(idNodo)+" </p>                     ");
+		sb.append("   </div>                                                                    ");
+		sb.append("   <div class=\"tab-pane fade\" id=\"risorse\">                              ");
+		sb.append("      <p> </p>																	");
+		sb.append("   </div>                                                                    ");
+		sb.append("                                                                             ");
+		sb.append("</div>                                                                       ");
+		return sb.toString();
+	}
+	public static String scriptSelectTag(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("<script>");
+		sb.append("('#nodoTab a').click(function (e) {                             ");
+	    sb.append("    e.preventDefault();                                         ");
+	    sb.append("    $(this).tab('show');                                        ");
+	    sb.append("});                                                             ");
+        sb.append("                                                                ");
+	    sb.append("// store the currently selected tab in the hash value           ");
+	    sb.append("$(\"ul.nav-tabs > li > a\").on(\"shown.bs.tab\", function (e) { ");
+	    sb.append("    var id = $(e.target).attr(\"href\").substr(1);              ");
+	    sb.append("    window.location.hash = id;                                  ");
+	    sb.append("});                                                             ");
+        sb.append("                                                                ");
+	    sb.append("// on load of the page: switch to the currently selected tab    ");
+	    sb.append("var hash = window.location.hash;                                ");
+	    sb.append("$('#nodoTab a[href=\"' + hash + '\"]').tab('show');             ");
+	    sb.append("</script>");
+	    return sb.toString();
 	}
 }

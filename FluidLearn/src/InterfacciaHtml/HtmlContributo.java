@@ -28,20 +28,28 @@ public class HtmlContributo {
 	public static String mostraPostNodo(int idNodo) throws SQLException{
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Azione> postNodo = DatabaseController.selectAllPostNodo(idNodo);
-		sb.append("<table class=\"table\">");
-		sb.append("<tr><th>testo</th><th>data</th></tr>");
+		
 		for(Azione azione:postNodo){
-			sb.append("<tr><td>"+azione.getCorpo().getText()+"</td><td>"+azione.getData()+"</td>");
-			sb.append("<td><button class=\"btn btn-primary btn-sm\" data-toggle=\"modal\" data-target=\"#CommentaPost\">Commenta</button></td>");
-			sb.append("<td>"+formInputCommento(azione.getIDPost())+"</td>");
-			sb.append("</tr>");
+			sb.append("<div class=\"col-sm-7\">           ");
+			sb.append("<div class=\"panel panel-default\">");
+			sb.append("<div class=\"panel-body\">         ");
+			sb.append(""+azione.getCorpo().getText()+""    );
+			sb.append("</div>                             ");
+			sb.append("</div>                             ");
+			sb.append("</div>                             ");
+			
+			
+			
+			//sb.append("<td>"+formInputCommento(azione.getIDPost())+"</td>");
+		
 			
 		}
-		sb.append("</table>");
+		
 		return sb.toString();		
 	}
 	public static String formInputCommento(int idPost){
 		StringBuilder sb = new StringBuilder();
+		
 		sb.append("	<div class=\"modal fade\" id=\"CommentaPost\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">                	     ");
 		sb.append("	  <div class=\"modal-dialog\">                                                                                                                       		 ");
 		sb.append("	    <div class=\"modal-content\">                                                                                                                    		 ");
@@ -73,4 +81,5 @@ public class HtmlContributo {
 		sb.append("</form>");
 		return sb.toString();
 	}
+	
 }
