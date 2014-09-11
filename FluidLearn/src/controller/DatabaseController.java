@@ -46,10 +46,27 @@ public class DatabaseController {
 		conn.close();
 		return c; 
 	}
+	public static Corso SelectProfilo() throws SQLException{
+		Corso c = new Corso();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select * from corso where nome = ?";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setString(1, "profilo");
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			c.setNome(rs.getString("nome"));
+			c.setDescrizione(rs.getString("descrizione"));
+			c.setIdCorso(rs.getInt("idcorso"));
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return c; 
+	}
 	public static ArrayList<Corso> SelectAllCorso() throws SQLException{
 		ArrayList<Corso> corsi = new ArrayList<Corso>();
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select * from corso";
+		String sql = "select * from corso where nome <> 'profilo'";
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
@@ -389,23 +406,89 @@ public class DatabaseController {
 	
 	/*----------parteciapnte--------*/
 	public static Partecipante selectPartecipante(String username, String password) throws SQLException{
-	
-			Connection conn = DriverManager.getConnection(url,usr,pwd);
-			String sql = " select * from utente where username = ? and password = ?";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, username);
-			ps.setString(2, password);
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-				Partecipante p = new PartecipanteConcreto();
-				p.setNome(rs.getString("username"));
-				p.setIDPartecipante(rs.getInt("idutente"));
-				return p;
-			}
-			ps.close();
-			rs.close();
-			conn.close();
-			return null;
-		
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = " select * from utente where username = ? and password = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setString(1, username);
+		ps.setString(2, password);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			Partecipante p = new PartecipanteConcreto();
+			p.setNome(rs.getString("username"));
+			p.setIDPartecipante(rs.getInt("idutente"));
+			return p;
+		}
+		System.out.println("login fallito");
+		ps.close();
+		rs.close();
+		conn.close();
+		return null;
 	}
+	public static int numRuoli(Partecipante part, int idCorso) throws SQLException{
+		int numRuolo = 0;
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select count(ruolo) as numRuolo from partecipante where idcorso=? and idutente=? group by ruolo";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idCorso);
+		ps.setInt(2, part.getIDPartecipante());
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			numRuolo = rs.getInt("numRuolo");
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return numRuolo;
+	}
+	public static ArrayList<String> getRuoli(Partecipante part, int idCorso) throws SQLException{
+		ArrayList<String> ruoli = new ArrayList<String>();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select ruolo from partecipante where idcorso=? and idutente=? ";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idCorso);
+		ps.setInt(2, part.getIDPartecipante());
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			ruoli.add(rs.getString("ruolo"));
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return ruoli;
+	}
+	public static Partecipante decorate (Partecipante part, int idCorso) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select ruolo from partecipante where idcorso=? and idutente=? ";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idCorso);
+		ps.setInt(2, part.getIDPartecipante());
+		ResultSet rs = ps.executeQuery();
+		
+		if(part.isDecorated()){
+			part = ((Ruolo)part).undecorate();
+		}
+		
+		while(rs.next()){
+			switch(rs.getString("ruolo")){
+			case "amministratore" : part = new Amministratore(part); break;
+			case "docente" : part = new Docente(part); break;
+			case "esaminatore" : part = new Esaminatore(part); break;
+			case "ideatore" : part = new Ideatore(part); break;
+			case "moderatore" : part = new Moderatore(part); break;
+			case "redattore" : part = new Redattore(part); break;
+			case "studente" : part = new Studente(part); break;
+			case "tecnico" : part = new Tecnico(part); break;
+			case "tutor" : part = new Tutor(part); break;
+			default : break;
+			}
+		}
+		if(!(part.isDecorated())) part = new Utente(part);
+		ps.close();
+		conn.close();
+		return part;
+	}
+	
+
+
+	
 }

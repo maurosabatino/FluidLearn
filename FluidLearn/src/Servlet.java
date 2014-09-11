@@ -19,6 +19,9 @@ import partecipante.*;
 import corso.*;
 import bean.*;
 import InterfacciaHtml.*;
+import InterfacciaHtml.corso.HtmlCorso;
+import InterfacciaHtml.corso.HtmlNodo;
+import InterfacciaHtml.corso.HtmlUDA;
 
 
 /**
@@ -81,7 +84,8 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("inserisciCorso")){
 			Corso corso = CorsoController.nuovoCorso(request);
-			String content = HtmlCorso.mostraCorso(corso.getIdCorso());
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlCorso.mostraCorso(corso.getIdCorso(),part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -95,17 +99,22 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
-		else if(operazione.equals("modificaCorso")){
-			Corso corso = CorsoController.modificaCorso(request);
-			String content = HtmlCorso.mostraCorso(corso.getIdCorso());
+		else if(operazione.equals("mostraCorso")){
+			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			if(part==null) part = new Utente(new PartecipanteConcreto());
+			else part = DatabaseController.decorate(part, idCorso);
+			session.setAttribute("partecipante", part);
+			String content = HtmlCorso.mostraCorso(idCorso, part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
-		else if(operazione.equals("mostraCorso")){
-			String idCorso = request.getParameter("idCorso");
-			String content = HtmlCorso.mostraCorso(Integer.parseInt(idCorso));
+		else if(operazione.equals("modificaCorso")){
+			Corso corso = CorsoController.modificaCorso(request);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlCorso.mostraCorso(corso.getIdCorso(),part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -130,7 +139,7 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("formInserisciUDA")){
 			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
-			String content = HtmlCorso.formInsertUDA(idCorso);
+			String content = HtmlUDA.formInsertUDA(idCorso);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -138,15 +147,17 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("inserisciUDA")){
 			UnitaDA UDA = CorsoController.nuovaUDA(request);
-			String content = HtmlCorso.mostraUDA(UDA.getIdUDA());
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlUDA.mostraUDA(UDA.getIdUDA(),part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");	
 		}
-		else if(operazione.equals("mostraUDACorso")){
-			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
-			String content = HtmlCorso.mostraUDACorso(idCorso);
+		else if(operazione.equals("mostraUDA")){
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlUDA.mostraUDA(idUDA,part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -154,7 +165,7 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("formInserisciNodo")){
 			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
-			String content = HtmlCorso.formInsertNodo(idUDA);
+			String content = HtmlNodo.formInsertNodo(idUDA);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -162,7 +173,8 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("inserisciNodo")){
 			Nodo nodo = CorsoController.nuovoNodo(request);
-			String content = HtmlCorso.mostraNodiUDA(nodo.getIdUDA());
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlNodo.mostraNodiUDA(nodo.getIdUDA(),part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -170,7 +182,8 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("mostraNodiUDA")){
 			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
-			String content = HtmlCorso.mostraNodiUDA(idUDA);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlNodo.mostraNodiUDA(idUDA,part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -178,7 +191,8 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("mostraNodo")){
 			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
-			String content = HtmlCorso.mostraNodo(idNodo);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlNodo.mostraNodo(idNodo,part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -187,7 +201,7 @@ public class Servlet extends HttpServlet {
 		else if(operazione.equals("formInserisciNodoLeaf")){
 			int idNodoPadre = Integer.parseInt(request.getParameter("idNodoPadre"));
 			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
-			String content = HtmlCorso.formInsertNodoLeaf(idUDA,idNodoPadre);
+			String content = HtmlNodo.formInsertNodoLeaf(idUDA,idNodoPadre);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -195,7 +209,7 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("inserisciNodoLeaf")){
 			Nodo nodo = CorsoController.nuovoNodoLeaf(request);
-			String content = HtmlCorso.mostraNodiLeaf(nodo.getIdNodo());
+			String content = HtmlNodo.mostraNodiLeaf(nodo.getIdNodo());
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -203,7 +217,7 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("mostraNodiLeaf")){
 			int idNodoPadre = Integer.parseInt(request.getParameter("idNodoPadre"));
-			String content = HtmlCorso.mostraNodiLeaf(idNodoPadre);
+			String content = HtmlNodo.mostraNodiLeaf(idNodoPadre);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -234,6 +248,13 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("inserisciCommento")){
 			Reazione commento = ContributoController.nuovaReazione(request);
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlNodo.mostraNodo(idNodo,part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
 		}
 		else if(operazione.equals("login")){
 			String username = request.getParameter("username");
@@ -247,6 +268,19 @@ public class Servlet extends HttpServlet {
 			response.setHeader("Pragma", "no-cache");
 			request.getSession().invalidate();
 			response.sendRedirect(request.getContextPath() + "/Index.jsp");
+		}
+		else if(operazione.equals("mostraProfilo")){
+			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			if(part==null) part = new Utente(new PartecipanteConcreto());
+			else part = DatabaseController.decorate(part, idCorso);
+			session.setAttribute("partecipante", part);
+			String content = HtmlProfilo.mostraProfilo(part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+			
 		}
 	}
 	

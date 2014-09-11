@@ -1,8 +1,8 @@
 package partecipante;
 
-public class Studente implements Ruolo{
+public class Docente implements Ruolo{
 	Partecipante part;
-	public Studente(Partecipante p){
+	public Docente(Partecipante p){
 		part = p;
 	}
 	@Override
@@ -39,7 +39,7 @@ public class Studente implements Ruolo{
 
 	@Override
 	public boolean hasRole(Role r) {
-		if(r == Role.STUDENTE) return true;
+		if(r == Role.DOCENTE) return true;
 		return part.hasRole(r);
 	}
 
@@ -56,7 +56,7 @@ public class Studente implements Ruolo{
 
 	@Override
 	public Partecipante undecorate(Role r) {
-		if(r == Role.STUDENTE) return part;
+		if(r == Role.DOCENTE) return part;
 		if(part.isDecorated()) part = ((Ruolo)part).undecorate(r);
 		return this;
 	}

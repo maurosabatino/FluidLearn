@@ -1,3 +1,4 @@
+<%@page import="controller.DatabaseController"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1" import="partecipante.*"%>
 <!DOCTYPE html>
@@ -28,7 +29,7 @@
   <form  class="navbar-form navbar-right" action="Servlet" name="dati" method="POST">
   <div class="form-group">
   <div>
-<p class="navbar-text">Utente: <%=part.getNome()%></p> 
+<a href="Servlet?operazione=mostraProfilo&idCorso=<%=DatabaseController.SelectProfilo().getIdCorso()%>"> <%=part.getNome() %></a>
 
 <input type=hidden name=operazione value=logout>
 <button type="submit" class="btn btn-warning navbar-btn btn-sm">Logout</button>

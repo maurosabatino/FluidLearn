@@ -2,7 +2,9 @@ package partecipante;
 
 public class PartecipanteConcreto implements Partecipante{
 	int idPartecipante;
+	
 	String nome;
+	
 	
 	@Override
 	public int getIDPartecipante() {
@@ -45,5 +47,7 @@ public class PartecipanteConcreto implements Partecipante{
 	public boolean isDecorated() {
 		return false;
 	}
+
+	
 
 }

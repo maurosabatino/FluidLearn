@@ -4,6 +4,8 @@ public interface Partecipante {
 	public int getIDPartecipante();
 	public void setIDPartecipante(int idPartecipante);
 	
+	
+	
 	public String getNome();
 	public void setNome(String nome);
 	public boolean isAutorePost(int IDPost);

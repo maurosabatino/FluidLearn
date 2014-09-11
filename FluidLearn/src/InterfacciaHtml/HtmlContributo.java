@@ -34,51 +34,30 @@ public class HtmlContributo {
 			sb.append("<div class=\"panel panel-default\">");
 			sb.append("<div class=\"panel-body\">         ");
 			sb.append(""+azione.getCorpo().getText()+""    );
+			sb.append(""+formInputCommento(azione)+"");
 			sb.append("</div>                             ");
 			sb.append("</div>                             ");
 			sb.append("</div>                             ");
-			
-			
-			
-			//sb.append("<td>"+formInputCommento(azione.getIDPost())+"</td>");
-		
 			
 		}
 		
 		return sb.toString();		
 	}
-	public static String formInputCommento(int idPost){
+	public static String formInputCommento(Azione post){
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("	<div class=\"modal fade\" id=\"CommentaPost\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">                	     ");
-		sb.append("	  <div class=\"modal-dialog\">                                                                                                                       		 ");
-		sb.append("	    <div class=\"modal-content\">                                                                                                                    		 ");
-		sb.append("	      <div class=\"modal-header\">                                                                                                                   		 ");
-		sb.append("	        <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Chiudi</span></button>");
-		sb.append("	        <h4 class=\"modal-title\" id=\"myModalLabel\">Nuovo Commento</h4>                                                                               		 ");
-		sb.append("	      </div>                                                                                                                                       	 		 ");
-		sb.append("	      <div class=\"modal-body\"> "
-				+ "                                                                                                                     		 ");
+		
 		sb.append("<form action=\"Servlet\" name=\"dati\" method=\"POST\" role=\"form\">");
 		
 		sb.append("<div class=\"row\">");
-		sb.append("<div class=\"col-xs-6 col-md-6\"><label for=\"testo\">testo Del Commento</label> <input type=\"text\" name=\"testo\" id=\"testo\" class=\"form-control\" placeholder=\"testo\" ></div>");
+		sb.append("<div class=\"col-xs-6 col-md-6\"> <input type=\"text\" name=\"testo\" id=\"testo\" class=\"form-control\" placeholder=\"testo del commento\" ></div>");
+		sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Commenta</button>");
 		sb.append("</div>");
-		sb.append("<input type=\"hidden\" name=\"idPost\" value=\""+idPost+"\">");
+		sb.append("<input type=\"hidden\" name=\"idNodo\" value=\""+post.getIDNodo()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idPost\" value=\""+post.getIDPost()+"\">");
 		sb.append("<input type=\"hidden\" name=\"operazione\" value=\"inserisciCommento\">");                                                                                                     		 
-		sb.append("	      </div>      ");
-		
-		sb.append("	      <div class=\"modal-footer\">                                                                                                                    		 ");
-		sb.append("	        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Esci</button>                                                           	 ");
-		sb.append("	        <button type=\"submit\" class=\"btn btn-primary\">Commenta</button>                                                                         	 ");
-		sb.append("	      </div>");                                                                                              
-		sb.append("	    </div>");
-		sb.append("	  </div>");
-		sb.append("	</div>");
-		
-		
-		sb.append("</div> </div>");
 		sb.append("</form>");
+		
 		return sb.toString();
 	}
 	
