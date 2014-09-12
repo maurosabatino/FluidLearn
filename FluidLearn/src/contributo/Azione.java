@@ -9,6 +9,8 @@ public interface Azione {
 	public void setIDPartecipante(int IDPartecipante);
 	public int getVisibilita();
 	public void setVisibilita(int visibilita);
+	public void setIDUDA(int idUDA);
+	public int getIDUDA();
 	public int getIDNodo();
 	public void setIDNodo(int IDNodo);
 	public Corpo getCorpo();

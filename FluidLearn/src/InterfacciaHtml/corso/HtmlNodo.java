@@ -103,7 +103,9 @@ public class HtmlNodo {
 		sb.append("      <p>"+nd.getDescrizione()+"</p>   							            ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
-		sb.append("      <p> "+HtmlContributo.mostraPostNodo(idNodo)+" </p>                     ");
+		sb.append(HtmlContributo.formInputPost(nd.getIdUDA(), idNodo));
+		
+		sb.append("      <p> "+HtmlContributo.mostraPost(nd.getIdUDA(),idNodo)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"risorse\">                              ");
 		sb.append("      <p> </p>																");

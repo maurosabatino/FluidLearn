@@ -11,7 +11,7 @@
 <title>Navbar</title>
 </head>
 <body>
-<div class="col-sm-3 col-md-2 col-md-offset-1 sidebar" id=sidebar>
+<div class="col-xs-3   sidebar" id=sidebar>
 <div class="navbar main-menu">
   <ul class="nav">
     <li><a href="#" class="glyphicon glyphicon-th-large" title="" data-original-title="Menu"></a></li>

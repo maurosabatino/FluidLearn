@@ -222,35 +222,27 @@ public class Servlet extends HttpServlet {
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
-		}else if(operazione.equals("formInserisciPost")){
-			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
-			String content = HtmlContributo.formInputPost(idNodo);
-			HtmlContent c = new HtmlContent();
-			c.setContent(content);
-			request.setAttribute("HTMLc", c);
-			forward(request,response,"/corso.jsp");	
 		}
 		else if(operazione.equals("inserisciPost")){
-			Azione post = ContributoController.nuovaAzione(request);
-			String content = HtmlContributo.mostraPostNodo(post.getIDNodo());
-			HtmlContent c = new HtmlContent();
-			c.setContent(content);
-			request.setAttribute("HTMLc", c);
-			forward(request,response,"/corso.jsp");
-		}
-		else if(operazione.equals("mostraPostNodo")){
-			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
-			String content = HtmlContributo.mostraPostNodo(idNodo);
-			HtmlContent c = new HtmlContent();
-			c.setContent(content);
-			request.setAttribute("HTMLc", c);
-			forward(request,response,"/corso.jsp");
-		}
-		else if(operazione.equals("inserisciCommento")){
-			Reazione commento = ContributoController.nuovaReazione(request);
-			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
-			String content = HtmlNodo.mostraNodo(idNodo,part);
+			Azione post = ContributoController.nuovaAzione(request,part.getIDPartecipante());
+			String content = HtmlContributo.mostraPost(post.getIDUDA(),post.getIDNodo());
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		
+		else if(operazione.equals("inserisciCommento")){
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			ContributoController.nuovaReazione(request,part.getIDPartecipante());
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			System.out.println("iduda "+idUDA);
+			System.out.println("idnodo "+idNodo);
+			String content = "";
+			if(idNodo!=0) content = HtmlNodo.mostraNodo(idNodo,part);
+			else content = HtmlUDA.mostraUDA(idUDA, part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);

@@ -61,7 +61,9 @@ DROP TABLE IF EXISTS Post cascade;
 create table Post( 
 	idPost serial primary key not null,
 	idPartecipante integer references Partecipante(idPartecipante) on delete cascade,
+	idUDA integer references UDA(idUDA) on delete cascade,
 	idNodo integer references nodo(idNodo) on delete cascade,
+	visibility integer,
 	testo text,
 	data timestamp,
 	deadline timestamp,

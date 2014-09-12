@@ -274,6 +274,22 @@ public class DatabaseController {
 		conn.close();
 		return nodo; 
 	}
+	public static ArrayList<Nodo> selectNodiLeaf(int idNodo) throws SQLException{
+		ArrayList<Nodo> nodiLeaf = new ArrayList<Nodo>();
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "select idnodofiglio from nodocomposto where idnodopadre = "+idNodo+"";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Nodo nodo = selectNodo(rs.getInt("idnodofiglio"));
+			nodiLeaf.add(nodo);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return nodiLeaf;
+		
+	}
 	
 	public static ArrayList<Nodo> selectAllNodi(int idUDA) throws SQLException{
 		ArrayList<Nodo> ListNodi = new ArrayList<Nodo>();
@@ -295,17 +311,19 @@ public class DatabaseController {
 	
 	public static Azione insertAzione(Azione azione) throws SQLException{
 		Connection conn = DriverManager.getConnection(url,usr,pwd); 
-		String sql = "insert into post(idPartecipante,idNodo,testo,data,deadline,idplugin) values (?,?,?,?,?,?)";
+		String sql = "insert into post(idPartecipante,iduda,idNodo,testo,data,deadline,idplugin) values (?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, azione.getIDPartecipante());
-		ps.setInt(2, azione.getIDNodo());
-		ps.setString(3, azione.getCorpo().getText());
+		ps.setInt(2, azione.getIDUDA());
+		if(azione.getIDNodo()!=0)ps.setInt(3, azione.getIDNodo());
+		else ps.setNull(3, Types.INTEGER);
+		ps.setString(4, azione.getCorpo().getText());
 		Timestamp t= new Timestamp(azione.getData().getTime());
-		ps.setTimestamp(4,t);
-		if(azione.hasDeadline()) ps.setTimestamp(5, new Timestamp(((Sollecitazione)azione).getDeadline().getTime()));
-		else ps.setNull(5, Types.TIMESTAMP);
-		if(azione.getCorpo().hasPlugin()) ps.setInt(6, ((Artefatto)azione).getIdPlugin());
-		else ps.setNull(6,Types.INTEGER);
+		ps.setTimestamp(5,t);
+		if(azione.hasDeadline()) ps.setTimestamp(6, new Timestamp(((Sollecitazione)azione).getDeadline().getTime()));
+		else ps.setNull(6, Types.TIMESTAMP);
+		if(azione.getCorpo().hasPlugin()) ps.setInt(7, ((Artefatto)azione).getIdPlugin());
+		else ps.setNull(7,Types.INTEGER);
 		ps.executeUpdate();
 		ResultSet rs = ps.getGeneratedKeys();
 		while (rs.next())
@@ -315,22 +333,7 @@ public class DatabaseController {
 		conn.close();
 		return azione;
 	}
-	public static ArrayList<Nodo> selectNodiLeaf(int idNodo) throws SQLException{
-		ArrayList<Nodo> nodiLeaf = new ArrayList<Nodo>();
-		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select idnodofiglio from nodocomposto where idnodopadre = "+idNodo+"";
-		PreparedStatement ps =  conn.prepareStatement(sql);
-		ResultSet rs = ps.executeQuery();
-		while (rs.next()){
-			Nodo nodo = selectNodo(rs.getInt("idnodofiglio"));
-			nodiLeaf.add(nodo);
-		}
-		rs.close();
-		ps.close();
-		conn.close();
-		return nodiLeaf;
-		
-	}
+	
 	public static Azione selectPost(int idPost) throws SQLException{
 		Azione contributo = new Post();
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
@@ -358,14 +361,20 @@ public class DatabaseController {
 		conn.close();
 		return contributo;
 	}
-	public static ArrayList<Azione> selectAllPostNodo(int idNodo) throws SQLException{
+	public static ArrayList<Azione> selectAllPost(int idUDA,int idNodo) throws SQLException{
 		ArrayList<Azione> postNodo = new ArrayList<Azione>();
-		String sql = "select * from post where idnodo = "+idNodo+" and idplugin is  NULL and deadline is null";
+		String sql ="";
+		if(idNodo!=0)
+		 sql = "select * from post where iduda = "+idUDA+" and idnodo = "+idNodo+" and idplugin is  NULL and deadline is null";
+		else sql = "select * from post where iduda = "+idUDA+" and idnodo is null and idplugin is  NULL and deadline is null";
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
 			Azione post = new Post();
+			post.setIDUDA(rs.getInt("iduda"));
+			post.setIDNodo(rs.getInt("idnodo"));
+			post.setIDPartecipante(rs.getInt("idpartecipante"));
 			post.setIDPost(rs.getInt("idpost"));
 			post.setData(rs.getTime("data"));
 			Corpo testo = new Testo();
@@ -401,6 +410,29 @@ public class DatabaseController {
 		conn.close();
 		return reazione;
 	}
+	public static ArrayList<Reazione> selectCommentiPost(int idPost) throws SQLException{
+		ArrayList<Reazione> commentiPost = new ArrayList<Reazione>();
+		String sql = "select * from commento where idpost=?";
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setInt(1, idPost);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Reazione commento = new Commento();
+			commento.setIDCommento(rs.getInt("idcommento"));
+			commento.setIDPartecipante(rs.getInt("idpartecipante"));
+			commento.setIDPost(rs.getInt("idpost"));
+			commento.setData(rs.getTime("data"));
+			Corpo testo = new Testo();
+			testo.setText(rs.getString("testo"));
+			commento.setCorpo(testo);
+			commentiPost.add(commento);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return commentiPost;
+	}
 	
 	
 	
@@ -419,6 +451,23 @@ public class DatabaseController {
 			return p;
 		}
 		System.out.println("login fallito");
+		ps.close();
+		rs.close();
+		conn.close();
+		return null;
+	}
+	public static Partecipante selectPartecipante(int idPartecipante) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = " select * from utente where idutente = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idPartecipante);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			Partecipante p = new PartecipanteConcreto();
+			p.setNome(rs.getString("username"));
+			p.setIDPartecipante(rs.getInt("idutente"));
+			return p;
+		}
 		ps.close();
 		rs.close();
 		conn.close();

@@ -7,6 +7,7 @@ public class Post implements Azione{
 	int IDPost;
 	int IDPartecipante;
 	int visibilita;
+	int idUDA;
 	int IDNodo;
 	Corpo corpo;
 	Date data;
@@ -49,6 +50,14 @@ public class Post implements Azione{
 	}
 	public boolean hasDeadline() {
 		return false;
+	}
+	@Override
+	public void setIDUDA(int idUDA) {
+		this.idUDA = idUDA;
+	}
+	@Override
+	public int getIDUDA() {
+		return idUDA;
 	}
 	
 	

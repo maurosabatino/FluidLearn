@@ -3,6 +3,7 @@ package InterfacciaHtml.corso;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import InterfacciaHtml.HtmlContributo;
 import partecipante.*;
 import controller.*;
 import corso.*;
@@ -39,12 +40,18 @@ public class HtmlUDA {
 		sb.append("          Decrizione dell'unità di apprendimento                                                         ");
 		sb.append("      </a>                                                                   ");
 		sb.append("   </li>                                                                     ");
+		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
 		sb.append("   <li><a href=\"#nodi\" data-toggle=\"tab\">Nodi</a></li>                   ");
 		if(part!=null && part.hasRole(Role.AMMINISTRATORE)) sb.append("   <li><a href=\"#gestUDA\" data-toggle=\"tab\">Gestione dell'unità di apprendimento</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
 		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");
 		sb.append("      <p>"+UDA.getDescrizione()+"</p>   							            ");
+		sb.append("   </div>                                                                    ");
+		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
+		sb.append(HtmlContributo.formInputPost(idUDA, 0));
+		
+		sb.append("      <p> "+HtmlContributo.mostraPost(idUDA,0)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"nodi\">                                 ");
 		sb.append("      <p> "+HtmlNodo.mostraNodiUDA(UDA.getIdUDA(), part)+" </p>                     ");
