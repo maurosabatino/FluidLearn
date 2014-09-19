@@ -71,12 +71,10 @@ public class HtmlNodo {
 			
 			
 			/*if(nodo.isComposite()){
-				sb.append("<tr><td>"+nomeUDA+"</td><td>"+nodo.getNome()+"</td><td>"+nodo.getDescrizione()+"</td>");
+				
 				sb.append("<td><a href=\"Servlet?operazione=formInserisciNodoLeaf&idNodoPadre="+nodo.getIdNodo()+"&idUDA="+idUDA+"\"> aggiungi Nodo</a></td>");
 				sb.append("<td><a href=\"Servlet?operazione=mostraNodiLeaf&idNodoPadre="+nodo.getIdNodo()+"\"> mostra nodi figli</a></td>");
-				sb.append("<td><a href=\"Servlet?operazione=formInserisciPost&idNodo="+nodo.getIdNodo()+"\"> pubblica un post</a></td>");
-				sb.append("<td><a href=\"Servlet?operazione=mostraPostNodo&idNodo="+nodo.getIdNodo()+"\"> visualizza i post</a></td>");
-				sb.append("</tr>");
+		
 			}*/
 		}
 		
@@ -94,18 +92,22 @@ public class HtmlNodo {
 		sb.append("      </a>                                                                   ");
 		sb.append("   </li>                                                                     ");
 		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
+		sb.append("   <li><a href=\"#sollecitazioni\" data-toggle=\"tab\">Sollecitazioni</a></li>                   ");
 		sb.append("   <li><a href=\"#risorse\" data-toggle=\"tab\">Risorse</a></li>             ");
 		if(part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#ElStudenti\" data-toggle=\"tab\">Elenco studenti</a></li>             ");
 		if(nd.isComposite()) sb.append("   <li><a href=\"#ElNodi\" data-toggle=\"tab\">Sotto nodi</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
 		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");
+		
 		sb.append("      <p>"+nd.getDescrizione()+"</p>   							            ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
 		sb.append(HtmlContributo.formInputPost(nd.getIdUDA(), idNodo));
-		
 		sb.append("      <p> "+HtmlContributo.mostraPost(nd.getIdUDA(),idNodo)+" </p>                     ");
+		sb.append("   </div>                                                                    ");
+		sb.append("   <div class=\"tab-pane fade\" id=\"sollecitazioni\">                                 ");
+		sb.append("  <p> "+HtmlContributo.mostraSollecitazioni(nd.getIdUDA(),idNodo)+" </p> ");	
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"risorse\">                              ");
 		sb.append("      <p> </p>																");
@@ -130,4 +132,5 @@ public class HtmlNodo {
 		sb.append("</table>");
 		return sb.toString();	
 	}
+	
 }

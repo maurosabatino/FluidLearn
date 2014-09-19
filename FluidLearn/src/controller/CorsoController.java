@@ -63,7 +63,7 @@ public class CorsoController {
 	public static UnitaDA nuovaUDA(HttpServletRequest request) throws ParseException, SQLException{
 		return DatabaseController.insertUDA(inputUDA(request));
 	}
-	
+
 	public static UnitaDA modificaUDA(HttpServletRequest request) throws ParseException, SQLException{
 		UnitaDA UDA = inputUDA(request);
 		String idUDA = request.getParameter("idUDA");
@@ -73,6 +73,49 @@ public class CorsoController {
 	public static boolean deleteUDA(HttpServletRequest request) throws NumberFormatException, SQLException{
 		String idUDA = request.getParameter("idUDA");
 		return DatabaseController.deleteUDA(Integer.parseInt(idUDA));
+	}
+	
+	
+	/*------------percorso di apprendimento--------*/
+	
+	public static PercorsoDiApprendimento inputPercorsoDA(HttpServletRequest request) throws NumberFormatException, SQLException{
+		UnitaDA uda2 = null;
+		UnitaDA uda1 = null;
+		if(!(request.getParameter("iduda1")==null)){
+			uda1 = DatabaseController.selectUDA(Integer.parseInt(request.getParameter("iduda1")));
+		}
+		if(!(request.getParameter("iduda2")==null)){
+			uda2 = DatabaseController.selectUDA(Integer.parseInt(request.getParameter("iduda2")));
+		}
+		return new PercorsoDiApprendimento(uda1, uda2);
+	}
+	public static PercorsoDiApprendimento nuovoPercorsoDA(HttpServletRequest request) throws SQLException{
+		PercorsoDiApprendimento percorso = inputPercorsoDA(request);
+		if(!cicli(percorso.getUda2().getIdUDA(),percorso.getUda1()) && percorso.getUda1().getData().before(percorso.getUda2().getData())) 
+			return DatabaseController.insertPercorso(percorso);
+		else return null;
+	}
+	
+	public static boolean deletePercorsoDiapprendimento(HttpServletRequest request) throws SQLException{
+		PercorsoDiApprendimento percorso = inputPercorsoDA(request);
+		for(int i : percorso.getUda1().getUDADipendenti()){
+			if(i == percorso.getUda2().getIdUDA() ) {
+				DatabaseController.deletePercorsoDA(percorso);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean cicli(int a, UnitaDA uda) throws SQLException{
+		boolean ciclo = false;
+		
+		for(int i : uda.getUDADipendenti()){
+			if(i == a) return true;
+			else ciclo = ciclo || cicli(a, DatabaseController.selectUDA(i)); 
+		}
+		
+		return ciclo;
 	}
 	
 	/*------nodo di apprendimento-------------*/

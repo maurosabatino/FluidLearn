@@ -52,6 +52,7 @@ public class HtmlCorso {
 		StringBuilder sb = new StringBuilder();
 		Corso c = DatabaseController.SelectCorso(idCorso);
 		sb.append("<h3>"+c.getNome()+"</h3>");
+		sb.append(getRuolo(part));
 		sb.append("<ul id=\"corsoTab\" class=\"nav nav-tabs\">                                     ");
 		sb.append("   <li class=\"active\">                                                     ");
 		sb.append("      <a href=\"#home\" data-toggle=\"tab\">                                 ");
@@ -59,10 +60,11 @@ public class HtmlCorso {
 		sb.append("      </a>                                                                   ");
 		sb.append("   </li>                                                                     ");
 		sb.append("   <li><a href=\"#UDA\" data-toggle=\"tab\">Unità di apprendimento</a></li>                   ");
-		if(part!=null && part.hasRole(Role.AMMINISTRATORE)) sb.append("   <li><a href=\"#gestCorso\" data-toggle=\"tab\">Gestione del Corso</a></li>             ");
+		if(part!=null && part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#gestCorso\" data-toggle=\"tab\">Gestione del Corso</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
 		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");
+		
 		sb.append("      <p>"+c.getDescrizione()+"</p>   							            ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"UDA\">                                 ");
@@ -100,6 +102,11 @@ public class HtmlCorso {
 		sb.append("</form>");
 		return sb.toString();
 	}
-	
+	public static String getRuolo(Partecipante part){
+		for (Role r: Role.values())
+		if(part.hasRole(r) && r!= Role.AMMINISTRATORE && r!= Role.TECNICO && r!= Role.UTENTE && r!= Role.IDEATORE)
+			return "<h2 class=\"pull-right\">"+r.toString()+"</h2>";
+	 return "";
+	}
 	
 }

@@ -6,13 +6,16 @@
 <jsp:setProperty  name="HTMLc" property="*"/>
 <html>
 <head>
- <script src="js/jquery.min.js"></script>
-  <script src="js/jquery-1.js"></script>
-   <script src="js/jquery-2.js"></script>
+
+  <script src="js/jquery-2.js"></script>
    <script src="js/bootstrap.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+   <script src="js/bootstrap-select.js"></script>
+
+ 
  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css"/>
+ <link rel="stylesheet" type="text/css" href="css/bootstrap-select.css"/>
+
  
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -22,18 +25,15 @@
 
 <jsp:include page="navbar.jsp"></jsp:include>
 
-<jsp:include page="barraLaterale.jsp"></jsp:include>
 
 <div class="col-xs-9  col-md-10 col-md-offset-1 main">
 
-<a href="Servlet?operazione=formInserisciCorso"> inserisci Corso</a>
-<a href="Servlet?operazione=mostraAllCorsi"> mostra i Corsi</a>
+
+
+
+
 <jsp:getProperty name="HTMLc" property="content"/>
-
-
-
-
-
+	
 
 
 </div>

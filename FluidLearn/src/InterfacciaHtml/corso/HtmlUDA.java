@@ -42,7 +42,7 @@ public class HtmlUDA {
 		sb.append("   </li>                                                                     ");
 		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
 		sb.append("   <li><a href=\"#nodi\" data-toggle=\"tab\">Nodi</a></li>                   ");
-		if(part!=null && part.hasRole(Role.AMMINISTRATORE)) sb.append("   <li><a href=\"#gestUDA\" data-toggle=\"tab\">Gestione dell'unità di apprendimento</a></li>             ");
+		if(part!=null && part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#gestUDA\" data-toggle=\"tab\">Gestione dell'unità di apprendimento</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
 		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");
@@ -63,7 +63,7 @@ public class HtmlUDA {
 		sb.append("   </div>                                                                    ");
 		sb.append("                                                                             ");
 		sb.append("</div>"); 
-		
+		sb.append(HtmlContributo.scriptDropDownSelect());
 		return sb.toString();
 	}
 	
@@ -93,5 +93,28 @@ public class HtmlUDA {
 		}
 		
 		return sb.toString();		
+	}
+	public static String mostraPercorsoDiApprendimmento(int idCorso) throws SQLException{
+		StringBuilder sb = new StringBuilder();
+		ArrayList<UnitaDA> UDACorso = DatabaseController.selectAllUDA(idCorso);
+		
+		
+		return sb.toString();
+	}
+	
+	public static ArrayList<UnitaDA> findUDaPozzo(ArrayList<UnitaDA> corsoUDA){
+		ArrayList<UnitaDA> UDAPozzo = new ArrayList<UnitaDA>();
+		for(UnitaDA uda : corsoUDA){
+			if(uda.getUDADipendenti() == null || uda.getUDADipendenti().isEmpty())
+				UDAPozzo.add(uda);
+		}
+		return UDAPozzo;
+	}
+	//TODO
+	public static ArrayList<UnitaDA> makeTree(ArrayList<UnitaDA> corsoUDA){
+		ArrayList<UnitaDA> UDAPozzo = findUDaPozzo(corsoUDA);
+		ArrayList<UnitaDA> tree = new ArrayList<UnitaDA>();
+		for(UnitaDA uda : UDAPozzo) tree.add(uda);
+		return tree;
 	}
 }

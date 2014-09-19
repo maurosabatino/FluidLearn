@@ -1,4 +1,5 @@
-package contributo;
+package contributo.corpo;
+
 
 public class Artefatto implements Corpo{
 	int idPlugin;

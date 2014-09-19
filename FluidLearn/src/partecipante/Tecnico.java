@@ -1,6 +1,6 @@
 package partecipante;
 
-public class Tecnico implements Ruolo{
+public class Tecnico implements Partecipante{
 	Partecipante part;
 	public Tecnico(Partecipante p){
 		part = p;
@@ -24,7 +24,16 @@ public class Tecnico implements Ruolo{
 	public void setNome(String nome) {
 		part.setNome(nome);
 	}
+	@Override
+	public String getPassword() {
+		return part.getPassword();
+	}
 
+	@Override
+	public void setPassword(String password) {
+		part.setPassword(password);
+		
+	}
 	@Override
 	public boolean isAutorePost(int IDPost) {
 		// TODO Auto-generated method stub
@@ -45,21 +54,9 @@ public class Tecnico implements Ruolo{
 
 	@Override
 	public boolean isDecorated() {
-		return true;
+		return false;
 	}
 
-	@Override
-	public Partecipante undecorate() {
-		if(part.isDecorated()) return ((Ruolo)part).undecorate();
-		return part;
-	}
-
-	@Override
-	public Partecipante undecorate(Role r) {
-		if(r == Role.TECNICO) return part;
-		if(part.isDecorated()) part = ((Ruolo)part).undecorate(r);
-		return this;
-	}
 	
 
 }

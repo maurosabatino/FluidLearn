@@ -1,4 +1,4 @@
-package contributo;
+package contributo.corpo;
 
 public class Testo implements Corpo {
 	String text;

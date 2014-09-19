@@ -2,6 +2,8 @@ package contributo;
 
 import java.util.Date;
 
+import contributo.corpo.Corpo;
+
 public class Risposta implements Reazione{
 
 	private int IDCommento;

@@ -2,6 +2,9 @@ package contributo;
 
 import java.util.Date;
 
+import contributo.corpo.Corpo;
+import contributo.state.azione.StatoAzione;
+
 public class Sollecitazione implements Azione {
 	int IDPost;
 	int IDPartecipante;
@@ -11,6 +14,7 @@ public class Sollecitazione implements Azione {
 	Corpo corpo;
 	Date data;
 	Date deadline;
+	StatoAzione stato;
 	
 	public int getIDPost() {
 		return IDPost;
@@ -64,6 +68,19 @@ public class Sollecitazione implements Azione {
 	@Override
 	public int getIDUDA() {
 		return idUDA;
+	}@Override
+	public void pubblica(String stato) {
+		this.stato.pubblica(this, stato);
+		
 	}
+	@Override
+	public void setStato(StatoAzione stato) {
+		this.stato = stato;
+	}
+	@Override
+	public StatoAzione getStato() {
+		return stato;
+	}
+	
 	
 }

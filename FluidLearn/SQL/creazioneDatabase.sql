@@ -17,6 +17,13 @@ create table UDA (
 	dataattivazione timestamp
 );
 
+DROP TABLE IF EXISTS percorsoDA cascade;
+create table percorsoDA (
+	idpercorsoDA serial primary key not null,
+	iduda1 integer not null references uda(iduda) on delete cascade,
+	iduda2 integer not null references uda(iduda) on delete cascade
+);
+
 DROP TABLE IF EXISTS nodo cascade;
 create table nodo (
 	idnodo serial primary key not null,
@@ -38,7 +45,8 @@ DROP TABLE IF EXISTS utente cascade;
 create table utente (
 	idUtente serial primary key not null,
 	username varchar(16) not null,
-	password varchar(32) not null
+	password varchar(32) not null,
+	ruolo varchar(32)
 );
 
 DROP TABLE IF EXISTS Partecipante cascade;
@@ -60,13 +68,14 @@ create table plugin(
 DROP TABLE IF EXISTS Post cascade;
 create table Post( 
 	idPost serial primary key not null,
-	idPartecipante integer references Partecipante(idPartecipante) on delete cascade,
+	idPartecipante integer references utente(idutente) on delete cascade,
 	idUDA integer references UDA(idUDA) on delete cascade,
 	idNodo integer references nodo(idNodo) on delete cascade,
 	visibility integer,
 	testo text,
 	data timestamp,
 	deadline timestamp,
+	stato varchar(45),
 	idPlugin integer references plugin(idplugin) on delete cascade
 );
 
@@ -74,7 +83,7 @@ DROP TABLE IF EXISTS Commento cascade;
 create table Commento(
 	idCommento serial primary key not null,
 	idPost integer references post(idPost) on delete cascade,
-	idPartecipante integer references Partecipante(idPartecipante) on delete cascade,
+	idPartecipante integer references Utente(idutente) on delete cascade,
 	testo text,
 	data timestamp,
 	idPlugin integer references plugin(idPlugin)on delete cascade

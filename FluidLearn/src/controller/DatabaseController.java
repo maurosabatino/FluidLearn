@@ -7,6 +7,9 @@ import java.util.*;
 
 import partecipante.*;
 import contributo.*;
+import contributo.corpo.Artefatto;
+import contributo.corpo.Corpo;
+import contributo.corpo.Testo;
 import corso.*;
 
 public class DatabaseController {
@@ -46,27 +49,11 @@ public class DatabaseController {
 		conn.close();
 		return c; 
 	}
-	public static Corso SelectProfilo() throws SQLException{
-		Corso c = new Corso();
-		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select * from corso where nome = ?";
-		PreparedStatement ps =  conn.prepareStatement(sql);
-		ps.setString(1, "profilo");
-		ResultSet rs = ps.executeQuery();
-		while (rs.next()){
-			c.setNome(rs.getString("nome"));
-			c.setDescrizione(rs.getString("descrizione"));
-			c.setIdCorso(rs.getInt("idcorso"));
-		}
-		rs.close();
-		ps.close();
-		conn.close();
-		return c; 
-	}
+	
 	public static ArrayList<Corso> SelectAllCorso() throws SQLException{
 		ArrayList<Corso> corsi = new ArrayList<Corso>();
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
-		String sql = "select * from corso where nome <> 'profilo'";
+		String sql = "select * from corso";
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
@@ -162,6 +149,13 @@ public class DatabaseController {
 			UDA.setData(rs.getTimestamp("dataattivazione"));
 			UDA.setIdUDA(rs.getInt("iduda"));
 		}
+		String sqlPercorso = "select * from percorsoDA where iduda1 = ?";
+		ps = conn.prepareStatement(sqlPercorso);
+		ps.setInt(1, idUDA);
+		rs = ps.executeQuery();
+		while (rs.next()){
+			UDA.getUDADipendenti().add(rs.getInt("iduda2"));
+		}
 		rs.close();
 		ps.close();
 		conn.close();
@@ -190,9 +184,40 @@ public class DatabaseController {
 	
 	//UC_gestirePercorsoDiApprendimento
 	
-	//aggiungiPercorso
+	public static PercorsoDiApprendimento insertPercorso(PercorsoDiApprendimento percorso) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "insert into percorsoda(iduda1,iduda2) values (?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, percorso.getUda1().getIdUDA());
+		ps.setInt(2, percorso.getUda2().getIdUDA());
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+		return percorso;
+	}
 	
-	//rimuoviPercorso
+	public static void deletePercorsoDA(PercorsoDiApprendimento percorso) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "delete from percorsoda where iduda1 = ? and iduda2 = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, percorso.getUda1().getIdUDA());
+		ps.setInt(2, percorso.getUda2().getIdUDA());
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+	}
+	public static void updatePercorsoDA(int iduda1,int iduda2,int idPercorsoDA) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "update percorsoda set iduda1 = ? ,iduda2 = ? where idpercorsoda = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, iduda1);
+		ps.setInt(2, iduda2);
+		ps.setInt(3, idPercorsoDA);
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+	}
+	
 	
 	public static void attivaUDA(int idUDA) throws SQLException{
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
@@ -311,7 +336,7 @@ public class DatabaseController {
 	
 	public static Azione insertAzione(Azione azione) throws SQLException{
 		Connection conn = DriverManager.getConnection(url,usr,pwd); 
-		String sql = "insert into post(idPartecipante,iduda,idNodo,testo,data,deadline,idplugin) values (?,?,?,?,?,?,?)";
+		String sql = "insert into post(idPartecipante,iduda,idNodo,testo,data,deadline,idplugin,stato,visibility) values (?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 		ps.setInt(1, azione.getIDPartecipante());
 		ps.setInt(2, azione.getIDUDA());
@@ -324,6 +349,8 @@ public class DatabaseController {
 		else ps.setNull(6, Types.TIMESTAMP);
 		if(azione.getCorpo().hasPlugin()) ps.setInt(7, ((Artefatto)azione).getIdPlugin());
 		else ps.setNull(7,Types.INTEGER);
+		ps.setString(8, azione.getStato().getState());
+		ps.setInt(9, azione.getVisibilita());
 		ps.executeUpdate();
 		ResultSet rs = ps.getGeneratedKeys();
 		while (rs.next())
@@ -361,31 +388,37 @@ public class DatabaseController {
 		conn.close();
 		return contributo;
 	}
-	public static ArrayList<Azione> selectAllPost(int idUDA,int idNodo) throws SQLException{
-		ArrayList<Azione> postNodo = new ArrayList<Azione>();
+	public static ArrayList<Azione> selectAllAzione(int idUDA,int idNodo) throws SQLException{
+		ArrayList<Azione> contributoNodo = new ArrayList<Azione>();
 		String sql ="";
 		if(idNodo!=0)
-		 sql = "select * from post where iduda = "+idUDA+" and idnodo = "+idNodo+" and idplugin is  NULL and deadline is null";
-		else sql = "select * from post where iduda = "+idUDA+" and idnodo is null and idplugin is  NULL and deadline is null";
+		 sql = "select * from post where iduda = "+idUDA+" and idnodo = "+idNodo+"";
+		else sql = "select * from post where iduda = "+idUDA+" and idnodo is null";
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
-			Azione post = new Post();
-			post.setIDUDA(rs.getInt("iduda"));
-			post.setIDNodo(rs.getInt("idnodo"));
-			post.setIDPartecipante(rs.getInt("idpartecipante"));
-			post.setIDPost(rs.getInt("idpost"));
-			post.setData(rs.getTime("data"));
+			Azione contributo;
+			Timestamp deadline = rs.getTimestamp("deadline");
+			if(deadline!=null){
+				contributo = new Sollecitazione();
+				((Sollecitazione)contributo).setDeadline(deadline);
+			}
+			contributo = new Post();
+			contributo.setIDUDA(rs.getInt("iduda"));
+			contributo.setIDNodo(rs.getInt("idnodo"));
+			contributo.setIDPartecipante(rs.getInt("idpartecipante"));
+			contributo.setIDPost(rs.getInt("idpost"));
+			contributo.setData(rs.getTime("data"));
 			Corpo testo = new Testo();
 			testo.setText(rs.getString("testo"));
-			post.setCorpo(testo);
-			postNodo.add(post);
+			contributo.setCorpo(testo);
+			contributoNodo.add(contributo);
 		}
 		rs.close();
 		ps.close();
 		conn.close();
-		return postNodo;
+		return contributoNodo;
 	}
 	
 	/*------------------Commento-------------------*/
@@ -437,7 +470,29 @@ public class DatabaseController {
 	
 	
 	/*----------parteciapnte--------*/
-	public static Partecipante selectPartecipante(String username, String password) throws SQLException{
+	
+	public static Partecipante insertUtente(Partecipante part) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "insert into utente(username,password,ruolo) values(?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+		ps.setString(1, part.getNome());
+		ps.setString(2, part.getPassword());
+		if(part.hasRole(Role.AMMINISTRATORE)) ps.setString(3,Role.AMMINISTRATORE.toString().toLowerCase());
+		if(part.hasRole(Role.TECNICO)) ps.setString(3,Role.TECNICO.toString().toLowerCase());
+		if(part.hasRole(Role.IDEATORE)) ps.setString(3,Role.IDEATORE.toString().toLowerCase());
+		if(part.hasRole(Role.UTENTE)) ps.setString(3,Role.UTENTE.toString().toLowerCase());
+	
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		while (rs.next())
+			part.setIDPartecipante(rs.getInt("idutente"));
+		rs.close();
+		ps.close();
+		conn.close();
+		return part;
+		
+	}
+	public static Partecipante login(String username, String password) throws SQLException{
 		Connection conn = DriverManager.getConnection(url,usr,pwd);
 		String sql = " select * from utente where username = ? and password = ?";
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -445,10 +500,17 @@ public class DatabaseController {
 		ps.setString(2, password);
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){
-			Partecipante p = new PartecipanteConcreto();
-			p.setNome(rs.getString("username"));
-			p.setIDPartecipante(rs.getInt("idutente"));
-			return p;
+			Partecipante part = new PartecipanteConcreto();
+			switch(rs.getString("ruolo")){
+			case "tecnico" : part = new Tecnico(part); break;
+			case "amministratore" : part = new Amministratore(part); break;
+			case "ideatore" : part = new Ideatore(part); break;
+			case "utente" : part = new Utente(part); break;
+			}
+			part.setNome(rs.getString("username"));
+			part.setIDPartecipante(rs.getInt("idutente"));
+			System.out.println("id part"+part.getIDPartecipante());
+			return part;
 		}
 		System.out.println("login fallito");
 		ps.close();
@@ -463,10 +525,10 @@ public class DatabaseController {
 		ps.setInt(1, idPartecipante);
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){
-			Partecipante p = new PartecipanteConcreto();
-			p.setNome(rs.getString("username"));
-			p.setIDPartecipante(rs.getInt("idutente"));
-			return p;
+			Partecipante part = new PartecipanteConcreto();
+			part.setNome(rs.getString("username"));
+			part.setIDPartecipante(rs.getInt("idutente"));
+			return part;
 		}
 		ps.close();
 		rs.close();
@@ -498,6 +560,7 @@ public class DatabaseController {
 		ps.setInt(2, part.getIDPartecipante());
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){
+			
 			ruoli.add(rs.getString("ruolo"));
 		}
 		rs.close();
@@ -518,15 +581,13 @@ public class DatabaseController {
 		}
 		
 		while(rs.next()){
+			System.out.println(rs.getString("ruolo"));
 			switch(rs.getString("ruolo")){
-			case "amministratore" : part = new Amministratore(part); break;
 			case "docente" : part = new Docente(part); break;
 			case "esaminatore" : part = new Esaminatore(part); break;
-			case "ideatore" : part = new Ideatore(part); break;
 			case "moderatore" : part = new Moderatore(part); break;
 			case "redattore" : part = new Redattore(part); break;
 			case "studente" : part = new Studente(part); break;
-			case "tecnico" : part = new Tecnico(part); break;
 			case "tutor" : part = new Tutor(part); break;
 			default : break;
 			}

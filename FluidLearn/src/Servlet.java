@@ -102,10 +102,16 @@ public class Servlet extends HttpServlet {
 		else if(operazione.equals("mostraCorso")){
 			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
-			if(part==null) part = new Utente(new PartecipanteConcreto());
-			else part = DatabaseController.decorate(part, idCorso);
-			session.setAttribute("partecipante", part);
-			String content = HtmlCorso.mostraCorso(idCorso, part);
+			String content = " ";
+			if(part==null){
+				content = "<h3> non sei un utente registrato e non puoi visualizzare i corsi, fai il <strong>Login</strong></h3>";
+			}
+			else{
+				part = DatabaseController.decorate(part, idCorso);
+				session.setAttribute("partecipante", part);
+				content = HtmlCorso.mostraCorso(idCorso, part);
+			}
+			 
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
@@ -225,6 +231,7 @@ public class Servlet extends HttpServlet {
 		}
 		else if(operazione.equals("inserisciPost")){
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			System.out.println("id partecipante post"+part.getIDPartecipante());
 			Azione post = ContributoController.nuovaAzione(request,part.getIDPartecipante());
 			String content = HtmlContributo.mostraPost(post.getIDUDA(),post.getIDNodo());
 			HtmlContent c = new HtmlContent();
@@ -251,23 +258,30 @@ public class Servlet extends HttpServlet {
 		else if(operazione.equals("login")){
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
-			Partecipante partecipante = DatabaseController.selectPartecipante(username, password);
+			Partecipante partecipante = DatabaseController.login(username, password);
 			session.setAttribute("partecipante", partecipante);
 			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("inserisciUtente")){
+			Partecipante partecipante = PartecipanteController.nuovoPartecipante(request);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formInserisciUtente")){
+			String content = HtmlPartecipante.formInsertUtente();
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");	
 		}
 		else if(operazione.equals("logout")){
 			response.setHeader("Cache-Control", "no-cache, no-store");
 			response.setHeader("Pragma", "no-cache");
 			request.getSession().invalidate();
-			response.sendRedirect(request.getContextPath() + "/Index.jsp");
+			response.sendRedirect(request.getContextPath() + "/corso.jsp");
 		}
 		else if(operazione.equals("mostraProfilo")){
-			int idCorso = Integer.parseInt(request.getParameter("idCorso"));
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
-			if(part==null) part = new Utente(new PartecipanteConcreto());
-			else part = DatabaseController.decorate(part, idCorso);
-			session.setAttribute("partecipante", part);
-			String content = HtmlProfilo.mostraProfilo(part);
+			String content = HtmlPartecipante.mostraProfilo(part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);

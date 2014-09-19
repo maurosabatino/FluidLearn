@@ -2,6 +2,8 @@ package contributo;
 
 import java.util.Date;
 
+import contributo.corpo.Corpo;
+
 public interface Reazione {
 	public int getIDCommento();
 	public void setIDCommento(int IDCommento);

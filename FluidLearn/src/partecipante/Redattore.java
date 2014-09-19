@@ -24,7 +24,16 @@ public class Redattore implements Ruolo{
 	public void setNome(String nome) {
 		part.setNome(nome);
 	}
+	@Override
+	public String getPassword() {
+		return part.getPassword();
+	}
 
+	@Override
+	public void setPassword(String password) {
+		part.setPassword(password);
+		
+	}
 	@Override
 	public boolean isAutorePost(int IDPost) {
 		// TODO Auto-generated method stub

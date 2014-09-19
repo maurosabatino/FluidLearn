@@ -1,6 +1,6 @@
 package partecipante;
 
-public class Ideatore implements Ruolo{
+public class Ideatore implements Partecipante{
 	Partecipante part;
 	public Ideatore(Partecipante p){
 		part = p;
@@ -24,6 +24,16 @@ public class Ideatore implements Ruolo{
 	public void setNome(String nome) {
 		part.setNome(nome);
 	}
+	@Override
+	public String getPassword() {
+		return part.getPassword();
+	}
+
+	@Override
+	public void setPassword(String password) {
+		part.setPassword(password);
+		
+	}
 
 	@Override
 	public boolean isAutorePost(int IDPost) {
@@ -45,21 +55,9 @@ public class Ideatore implements Ruolo{
 
 	@Override
 	public boolean isDecorated() {
-		return true;
+		return false;
 	}
 
-	@Override
-	public Partecipante undecorate() {
-		if(part.isDecorated()) return ((Ruolo)part).undecorate();
-		return part;
-	}
-
-	@Override
-	public Partecipante undecorate(Role r) {
-		if(r == Role.IDEATORE) return part;
-		if(part.isDecorated()) part = ((Ruolo)part).undecorate(r);
-		return this;
-	}
 	
 
 }

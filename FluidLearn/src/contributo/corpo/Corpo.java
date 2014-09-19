@@ -1,4 +1,4 @@
-package contributo;
+package contributo.corpo;
 
 public interface Corpo {
 	public String getText();

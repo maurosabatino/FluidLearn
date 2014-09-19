@@ -4,6 +4,7 @@ public class PartecipanteConcreto implements Partecipante{
 	int idPartecipante;
 	
 	String nome;
+	String password;
 	
 	
 	@Override
@@ -46,6 +47,17 @@ public class PartecipanteConcreto implements Partecipante{
 	@Override
 	public boolean isDecorated() {
 		return false;
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public void setPassword(String password) {
+		this.password = password;
+		
 	}
 
 	

@@ -2,8 +2,12 @@ package contributo;
 
 import java.util.Date;
 
+import contributo.corpo.Corpo;
+import contributo.state.azione.AzioneNuovo;
+import contributo.state.azione.StatoAzione;
+
 public class Post implements Azione{
-	
+	StatoAzione stato;
 	int IDPost;
 	int IDPartecipante;
 	int visibilita;
@@ -11,6 +15,9 @@ public class Post implements Azione{
 	int IDNodo;
 	Corpo corpo;
 	Date data;
+	public Post(){
+		stato = new AzioneNuovo();
+	}
 	
 	public int getIDPost() {
 		return IDPost;
@@ -58,6 +65,19 @@ public class Post implements Azione{
 	@Override
 	public int getIDUDA() {
 		return idUDA;
+	}
+	@Override
+	public void pubblica(String stato) {
+		this.stato.pubblica(this, stato);
+		
+	}
+	@Override
+	public void setStato(StatoAzione stato) {
+		this.stato = stato;
+	}
+	@Override
+	public StatoAzione getStato() {
+		return stato;
 	}
 	
 	
