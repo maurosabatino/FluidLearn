@@ -7,15 +7,16 @@
 <html>
 <head>
 
-  <script src="js/jquery-2.js"></script>
-   <script src="js/bootstrap.js"></script>
-   <script src="js/bootstrap-select.js"></script>
+   <script src="js/jquery-2.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/bootstrap-select.js"></script>
 
- 
  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css"/>
  <link rel="stylesheet" type="text/css" href="css/bootstrap-select.css"/>
-
+ <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
+ <link rel="stylesheet" type="text/css" href="css/mio.css"/>
  
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -27,7 +28,6 @@
 
 
 <div class="col-xs-9  col-md-10 col-md-offset-1 main">
-
 
 
 

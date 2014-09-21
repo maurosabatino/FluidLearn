@@ -9,6 +9,7 @@ import controller.*;
 import corso.*;
 
 public class HtmlUDA {
+	
 	public static String formInsertUDA(int idCorso){
 		StringBuilder sb = new StringBuilder();
 		sb.append("<form action=\"Servlet\" name=\"dati\" method=\"POST\" role=\"form\">");
@@ -30,6 +31,7 @@ public class HtmlUDA {
 		sb.append("</form>");
 		return sb.toString();
 	}
+	
 	public static String mostraUDA(int idUDA,Partecipante part) throws SQLException{
 		StringBuilder sb = new StringBuilder();
 		UnitaDA UDA = DatabaseController.selectUDA(idUDA);
@@ -51,14 +53,16 @@ public class HtmlUDA {
 		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
 		sb.append(HtmlContributo.formInputPost(idUDA, 0));
 		
-		sb.append("      <p> "+HtmlContributo.mostraPost(idUDA,0)+" </p>                     ");
+		sb.append("      <p> "+HtmlContributo.mostraPost(idUDA,0,part)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"nodi\">                                 ");
 		sb.append("      <p> "+HtmlNodo.mostraNodiUDA(UDA.getIdUDA(), part)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"gestUDA\">                              ");
 		sb.append("      <p>																");
-		// elimina UDA, modifica UDA, inserisci un nodo
+		//sb.append("<a href=\"Servlet?operazione=formModificaCorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> modifica</a>");
+		//sb.append("<a href=\"Servlet?operazione=eliminaCorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> elimina</a>");
+		sb.append("<a href=\"Servlet?operazione=formInserisciNodo&idUDA="+idUDA+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> aggiungi Nodo</a>");
 		sb.append("      </p>																	");
 		sb.append("   </div>                                                                    ");
 		sb.append("                                                                             ");

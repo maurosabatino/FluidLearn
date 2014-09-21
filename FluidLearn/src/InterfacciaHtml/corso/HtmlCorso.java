@@ -72,9 +72,9 @@ public class HtmlCorso {
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"gestCorso\">                              ");
 		sb.append("      <p>																");
-		sb.append("<a href=\"Servlet?operazione=formModificaCorso&idCorso="+c.getIdCorso()+"\"> modifica</a>");
-		sb.append("<a href=\"Servlet?operazione=eliminaCorso&idCorso="+c.getIdCorso()+"\"> elimina</a>");
-		sb.append("<a href=\"Servlet?operazione=formInserisciUDA&idCorso="+c.getIdCorso()+"\"> aggiungi UDA</a>");
+		sb.append("<a href=\"Servlet?operazione=formModificaCorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> modifica</a>");
+		sb.append("<a href=\"Servlet?operazione=eliminaCorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> elimina</a>");
+		sb.append("<a href=\"Servlet?operazione=formInserisciUDA&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> aggiungi UDA</a>");
 		sb.append("      </p>																	");
 		sb.append("   </div>                                                                    ");
 		sb.append("                                                                             ");

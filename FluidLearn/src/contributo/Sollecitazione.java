@@ -3,6 +3,7 @@ package contributo;
 import java.util.Date;
 
 import contributo.corpo.Corpo;
+import contributo.state.azione.AzioneNuovo;
 import contributo.state.azione.StatoAzione;
 
 public class Sollecitazione implements Azione {
@@ -16,6 +17,9 @@ public class Sollecitazione implements Azione {
 	Date deadline;
 	StatoAzione stato;
 	
+	public Sollecitazione(){
+		stato = new AzioneNuovo();
+	}
 	public int getIDPost() {
 		return IDPost;
 	}

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import contributo.*;
+import contributo.valutazione.Valutazione;
 import controller.*;
 import partecipante.*;
 import corso.*;
@@ -229,18 +230,20 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
+		else if(operazione.equals("eliminaNodo")){
+			CorsoController.eliminaNodo(request);
+		}
 		else if(operazione.equals("inserisciPost")){
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
-			System.out.println("id partecipante post"+part.getIDPartecipante());
 			Azione post = ContributoController.nuovaAzione(request,part.getIDPartecipante());
-			String content = HtmlContributo.mostraPost(post.getIDUDA(),post.getIDNodo());
+			String content = HtmlContributo.mostraPost(post.getIDUDA(),post.getIDNodo(),part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
 		
-		else if(operazione.equals("inserisciCommento")){
+		else if(operazione.equals("inserisciReazione")){
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
 			ContributoController.nuovaReazione(request,part.getIDPartecipante());
 			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
@@ -254,6 +257,18 @@ public class Servlet extends HttpServlet {
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formValutazione")){
+			int idCommento = Integer.parseInt(request.getParameter("idCommento"));
+			String content = HtmlContributo.forminputValutazione(idCommento);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("inserisciValutazione")){
+			Valutazione valutazione = ContributoController.nuovaValutazione(request);
+			
 		}
 		else if(operazione.equals("login")){
 			String username = request.getParameter("username");

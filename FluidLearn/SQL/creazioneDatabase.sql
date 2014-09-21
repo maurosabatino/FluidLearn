@@ -89,6 +89,16 @@ create table Commento(
 	idPlugin integer references plugin(idPlugin)on delete cascade
 );
 
+DROP TABLE IF EXISTS Valutazione cascade;
+create table Valutazione(
+	idValutazione serial primary key not null,
+	idcommento integer references commento(idcommento) on delete cascade,
+	tipovalutazione integer,
+	voto text,
+	note text,
+	visibilita integer
+);
+
 DROP TABLE IF EXISTS allegatiPost cascade;
 create table allegatiPost(
 	idAllegatiPost serial primary key not null,

@@ -52,7 +52,6 @@ public class HtmlNodo {
 	public static String mostraNodiUDA(int idUDA,Partecipante part) throws SQLException{
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Nodo> NodiUDA = DatabaseController.selectAllNodi(idUDA);
-		String nomeUDA = DatabaseController.selectUDA(idUDA).getNome();
 		for(Nodo nodo:NodiUDA){
 			sb.append("<div class=\"row\">                                                                                                                         ");
 			sb.append("  <div class=\"col-sm-6 col-md-4\">                                                                                                         ");
@@ -83,6 +82,7 @@ public class HtmlNodo {
 	
 	public static String mostraNodo(int idNodo,Partecipante part) throws SQLException{
 		StringBuilder sb = new StringBuilder();
+		if(part!=null){
 		Nodo nd = DatabaseController.selectNodo(idNodo);
 		sb.append("<h3>"+nd.getNome()+"</h3>");
 		sb.append("<ul id=\"nodoTab\" class=\"nav nav-tabs\">                                     ");
@@ -94,7 +94,7 @@ public class HtmlNodo {
 		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
 		sb.append("   <li><a href=\"#sollecitazioni\" data-toggle=\"tab\">Sollecitazioni</a></li>                   ");
 		sb.append("   <li><a href=\"#risorse\" data-toggle=\"tab\">Risorse</a></li>             ");
-		if(part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#ElStudenti\" data-toggle=\"tab\">Elenco studenti</a></li>             ");
+		if(part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#gestNodo\" data-toggle=\"tab\">Gestione Nodo</a></li>             ");
 		if(nd.isComposite()) sb.append("   <li><a href=\"#ElNodi\" data-toggle=\"tab\">Sotto nodi</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
@@ -104,13 +104,19 @@ public class HtmlNodo {
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
 		sb.append(HtmlContributo.formInputPost(nd.getIdUDA(), idNodo));
-		sb.append("      <p> "+HtmlContributo.mostraPost(nd.getIdUDA(),idNodo)+" </p>                     ");
+		sb.append("      <p> "+HtmlContributo.mostraPost(nd.getIdUDA(),idNodo,part)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"sollecitazioni\">                                 ");
-		sb.append("  <p> "+HtmlContributo.mostraSollecitazioni(nd.getIdUDA(),idNodo)+" </p> ");	
+		if(part.hasRole(Role.DOCENTE))
+			sb.append(HtmlContributo.formInputSollecitazione(nd.getIdUDA(), idNodo));
+		sb.append("  <p> "+HtmlContributo.mostraSollecitazioni(nd.getIdUDA(),idNodo,part)+" </p> ");	
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"risorse\">                              ");
 		sb.append("      <p> </p>																");
+		sb.append("   </div>                                                                    ");
+		sb.append("   <div class=\"tab-pane fade\" id=\"gestNodo\">                              ");
+		sb.append("<a href=\"Servlet?operazione=eliminaNodo&idNodo="+idNodo+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> elimina Nodo</a>");
+		sb.append("<a href=\"Servlet?operazione=formInserisciNodoLeaf&idNodoPadre="+idNodo+"&idUDA="+nd.getIdUDA()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> aggiungi nodo figlio</a>");
 		sb.append("   </div>                                                                    ");
 		if(nd.isComposite()){
 			sb.append("   <div class=\"tab-pane fade\" id=\"ElNodi\">                            ");
@@ -118,18 +124,29 @@ public class HtmlNodo {
 			sb.append("   </div>                                                                    ");
 		}
 		sb.append("</div>                                                                       ");
+		}else sb.append("<h3>Spiacente devi fare il login</h3>");
 		return sb.toString();
 	}
 	public static String mostraNodiLeaf(int idNodoPadre) throws SQLException{
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Nodo> nodi = DatabaseController.selectNodiLeaf(idNodoPadre);
-		sb.append("<table class=\"table\">");
-		sb.append("<tr><th>UDA</th><th>nome</th><th>descrizione</th></tr>");
+	
 		for(Nodo nd:nodi){
-			sb.append("<tr><td>"+nd.getNome()+"</td><td>"+"</td><td>"+nd.getDescrizione()+"</td>");
-			sb.append("</tr>");
+			sb.append("<div class=\"row\">                                                                                                                         ");
+			sb.append("  <div class=\"col-sm-6 col-md-4\">                                                                                                         ");
+			sb.append("    <div class=\"thumbnail\">                                                                                                               ");
+			sb.append("                                                                                                                                          ");
+			sb.append("      <div class=\"caption\">                                                                                                               ");
+			sb.append("        <h3>"+nd.getNome()+"</h3>                                                                                                          ");
+			sb.append("        <p>"+nd.getDescrizione()+"</p>                                                                                                                        ");
+			sb.append("<p><a href=\"Servlet?operazione=mostraNodo&idNodo="+nd.getIdNodo()+" \" class=\"btn btn-primary\" role=\"button\">Entra</a> </p>  ");
+			sb.append("      </div>                                                                                                                              ");
+			sb.append("    </div>                                                                                                                                ");
+			sb.append("  </div>                                                                                                                                  ");
+			sb.append("</div>																																	 ");
+			
 		}
-		sb.append("</table>");
+		
 		return sb.toString();	
 	}
 	

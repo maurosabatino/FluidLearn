@@ -11,6 +11,9 @@ import contributo.*;
 import contributo.corpo.Artefatto;
 import contributo.corpo.Corpo;
 import contributo.corpo.Testo;
+import contributo.valutazione.Valutazione;
+import contributo.valutazione.ValutazioneInt;
+import contributo.valutazione.ValutazioneString;
 
 public class ContributoController {
 	public static Azione inputAzione(HttpServletRequest request,int idPartecipante) throws ParseException{//manca la visibilità del post
@@ -22,7 +25,7 @@ public class ContributoController {
 				((Sollecitazione)contributo).setDeadline((new SimpleDateFormat("yyyy-MM-dd").parse(data)));
 			}
 		}
-		if(!(request.getParameter("idUDA")==null)) contributo.setVisibilita(Integer.parseInt(request.getParameter("visibilita")));
+		if(!(request.getParameter("visibilita")==null)) contributo.setVisibilita(Integer.parseInt(request.getParameter("visibilita")));
 		if(!(request.getParameter("idUDA")==null)) contributo.setIDUDA(Integer.parseInt(request.getParameter("idUDA")));
 		if(!(request.getParameter("idNodo")==null)) contributo.setIDNodo(Integer.parseInt(request.getParameter("idNodo")));
 		if(!(request.getParameter("stato")==null)) contributo.pubblica(String.valueOf(request.getParameter("stato")));
@@ -65,5 +68,23 @@ public class ContributoController {
 	}
 	public static Reazione nuovaReazione(HttpServletRequest request,int idPartecipante) throws SQLException, ParseException{
 		return DatabaseController.insertReazione((inputReazione(request,idPartecipante)));
+	}
+	
+	
+	
+	/*--------valutazione------------*/
+	public static Valutazione inputValutazione(HttpServletRequest request){
+		Valutazione valutazione = null;
+		if(!(request.getParameter("tipo")==null)){
+			if(Integer.parseInt((request.getParameter("tipo")))==1) valutazione = new ValutazioneInt();
+			else valutazione = new ValutazioneString();
+		}
+		if(!(request.getParameter("visibilita")==null)) valutazione.setVisibilità(Integer.parseInt((request.getParameter("visibilita"))));
+		if(!(request.getParameter("voto")==null)) valutazione.setVoto(request.getParameter("voto"));
+		if(!(request.getParameter("note")==null)) valutazione.setNote(request.getParameter("note"));
+		return valutazione;
+	}
+	public static Valutazione nuovaValutazione(HttpServletRequest request) throws NumberFormatException, SQLException{
+		return DatabaseController.insertValutazione(Integer.parseInt(request.getParameter("idRisposta")), inputValutazione(request));
 	}
 }

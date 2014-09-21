@@ -5,11 +5,16 @@ package controller;
 import java.sql.*;
 import java.util.*;
 
+import com.sun.faces.mgbean.ManagedBeanPreProcessingException.Type;
+
 import partecipante.*;
 import contributo.*;
 import contributo.corpo.Artefatto;
 import contributo.corpo.Corpo;
 import contributo.corpo.Testo;
+import contributo.valutazione.Valutazione;
+import contributo.valutazione.ValutazioneInt;
+import contributo.valutazione.ValutazioneString;
 import corso.*;
 
 public class DatabaseController {
@@ -101,8 +106,10 @@ public class DatabaseController {
 		ps.setString(1, UDA.getNome());
 		ps.setString(2, UDA.getDescrizione());
 		ps.setInt(3, UDA.getIdCorso());
-		Timestamp t= new Timestamp(UDA.getData().getTime());
-		ps.setTimestamp(4,t );
+		if(UDA.getData()!=null){
+			Timestamp t= new Timestamp(UDA.getData().getTime());
+			ps.setTimestamp(4,t );
+		}else ps.setNull(4, Types.TIMESTAMP);;
 		ps.executeUpdate();
 		ResultSet rs = ps.getGeneratedKeys();
 		while (rs.next())
@@ -331,6 +338,16 @@ public class DatabaseController {
 		return ListNodi;
 	}
 	
+	public static void deleteNodo(int idnodo) throws SQLException{
+		String sql = "delete from nodo where idnodo = ?";
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setInt(1, idnodo);
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+	}
+	
 	
 	/*----------post-------------*/
 	
@@ -398,13 +415,15 @@ public class DatabaseController {
 		PreparedStatement ps =  conn.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()){
-			Azione contributo;
+			Azione contributo = new Post();;
 			Timestamp deadline = rs.getTimestamp("deadline");
+			System.out.println("deadline: "+deadline.toString());
 			if(deadline!=null){
+				System.out.println("creo una sollecitazione");
 				contributo = new Sollecitazione();
 				((Sollecitazione)contributo).setDeadline(deadline);
 			}
-			contributo = new Post();
+			
 			contributo.setIDUDA(rs.getInt("iduda"));
 			contributo.setIDNodo(rs.getInt("idnodo"));
 			contributo.setIDPartecipante(rs.getInt("idpartecipante"));
@@ -413,6 +432,7 @@ public class DatabaseController {
 			Corpo testo = new Testo();
 			testo.setText(rs.getString("testo"));
 			contributo.setCorpo(testo);
+			System.out.println("ma continua ad essere una sollecitazione? "+contributo.hasDeadline());
 			contributoNodo.add(contributo);
 		}
 		rs.close();
@@ -442,6 +462,29 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 		return reazione;
+	}
+	public static Reazione selectCommento(int idCommento) throws SQLException{
+		Reazione commento = new Commento();
+		String sql = "select * from commento where idcommento=?";
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setInt(1, idCommento);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+		
+			commento.setIDCommento(rs.getInt("idcommento"));
+			commento.setIDPartecipante(rs.getInt("idpartecipante"));
+			commento.setIDPost(rs.getInt("idpost"));
+			commento.setData(rs.getTime("data"));
+			Corpo testo = new Testo();
+			testo.setText(rs.getString("testo"));
+			commento.setCorpo(testo);
+		
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return commento;
 	}
 	public static ArrayList<Reazione> selectCommentiPost(int idPost) throws SQLException{
 		ArrayList<Reazione> commentiPost = new ArrayList<Reazione>();
@@ -598,7 +641,79 @@ public class DatabaseController {
 		return part;
 	}
 	
+	
+	/*-------valutazione------------*/
+	
+	public static Valutazione insertValutazione(int idRisposta,Valutazione valutazione) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
 
+		String sql = "insert into valutazione(idcommento,tipovalutazione,voto,note,visibilita) values (?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+		ps.setInt(1,idRisposta);
+		ps.setInt(2,valutazione.getTipo());
+		ps.setString(3, valutazione.getVoto());
+		ps.setString(4, valutazione.getNote());
+		ps.setInt(5, valutazione.getVisibilità());
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		while (rs.next())
+			valutazione.setIdValutazione(rs.getInt("idvalutazione"));
+		rs.close();
+		ps.close();
+		conn.close();
+		return valutazione;
+	}
+	//TODO
+	public static ArrayList<Reazione> selectRisposteValutate(int idPost) throws SQLException{
+		ArrayList<Reazione> commentiPost = new ArrayList<Reazione>();
+		String sql = "select * from commento where idpost=?";
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setInt(1, idPost);
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()){
+			Reazione commento = new Commento();
+			commento.setIDCommento(rs.getInt("idcommento"));
+			commento.setIDPartecipante(rs.getInt("idpartecipante"));
+			commento.setIDPost(rs.getInt("idpost"));
+			commento.setData(rs.getTime("data"));
+			Corpo testo = new Testo();
+			testo.setText(rs.getString("testo"));
+			commento.setCorpo(testo);
+			
+			commentiPost.add(commento);
+		}
+		rs.close();
+		ps.close();
+		conn.close();
+		return commentiPost;
+	}
 
+	public static ArrayList<Reazione> selectValuazioniStudente(int idPartecipante,int idUda) throws SQLException{
+		ArrayList<Reazione> risposteValutate = new ArrayList<Reazione>();
+		String sql = "select * from commento,valutazione where commento.idcommento = valutazione.idcommento and commento.idpartecipante=? and visibilita>1 and commento.idcommento in(select idcommento from post,commento where post.idpost = commento.idpost and post.iduda=?)";
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setInt(2, idUda);
+		ps.setInt(1, idPartecipante);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			Reazione reazione = new Risposta();
+			reazione.setData(rs.getTimestamp("data"));
+			reazione.setIDCommento(rs.getInt("idcommento"));
+			reazione.setIDPartecipante(rs.getInt("idpartecipante"));
+			reazione.setIDPost(rs.getInt("idpost"));
+			Valutazione valutazione;
+			if(rs.getInt("tipo")==1) valutazione = new ValutazioneInt();
+			else valutazione = new ValutazioneString();
+			valutazione.setIdValutazione(rs.getInt("idvalutazione"));
+			valutazione.setVoto(rs.getString("voto"));
+			valutazione.setNote(rs.getString("note"));
+			valutazione.setVisibilità(rs.getInt("visibilita"));
+			((Risposta)reazione).setValutazione(valutazione);
+			risposteValutate.add(reazione);
+		}
+		return risposteValutate;
+	}
 	
 }

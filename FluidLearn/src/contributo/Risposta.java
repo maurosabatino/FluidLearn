@@ -3,6 +3,9 @@ package contributo;
 import java.util.Date;
 
 import contributo.corpo.Corpo;
+import contributo.state.reazione.ReazioneNuovo;
+import contributo.state.reazione.StatoReazione;
+import contributo.valutazione.Valutazione;
 
 public class Risposta implements Reazione{
 
@@ -11,6 +14,14 @@ public class Risposta implements Reazione{
 	private int IDPost;
 	private Corpo corpo;
 	private Date data;
+	
+	private Valutazione valutazione;
+	
+	StatoReazione stato;
+	
+	public Risposta(){
+		stato = new ReazioneNuovo();
+	}
 	
 	@Override
 	public int getIDCommento() {
@@ -52,5 +63,26 @@ public class Risposta implements Reazione{
 	public void setCorpo(Corpo corpo) {
 		this.corpo = corpo;		
 	}
+	@Override
+	public void pubblica(String stato) {
+		this.stato.pubblica(this, stato);
+	}
+	@Override
+	public void setStato(StatoReazione stato) {
+		this.stato = stato;
+	}
+	@Override
+	public StatoReazione getStato() {
+		return stato;
+	}
+
+	public Valutazione getValutazione() {
+		return valutazione;
+	}
+
+	public void setValutazione(Valutazione valutazione) {
+		this.valutazione = valutazione;
+	}
+	
 
 }

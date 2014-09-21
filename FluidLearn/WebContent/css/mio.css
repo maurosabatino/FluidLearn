@@ -1,0 +1,25 @@
+.text-block {
+ 
+  vertical-align: top;
+  margin: 0px;
+  
+ -ms-word-break: break-all;
+     word-break: break-all;
+ 
+-webkit-hyphens: auto;
+   -moz-hyphens: auto;
+        hyphens: auto;
+          
+}
+ 
+  .text-block .bd {
+    display:table-cell;
+   vertical-align: top;
+   zoom:1;
+    > :first-child{ margin-top:0; }
+   > :last-child{ margin-bottom:0; }
+ }
+  .text-block .img {
+   float: left;
+   vertical-align: top;
+ }

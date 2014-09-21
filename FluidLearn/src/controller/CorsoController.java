@@ -144,5 +144,9 @@ public class CorsoController {
 		return DatabaseController.insertNodoLeaf(inputNodoLeaf(request));
 	}
 	
+	public static void eliminaNodo(HttpServletRequest request) throws SQLException{
+		int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+		DatabaseController.deleteNodo(idNodo);
+	}
 	
 }

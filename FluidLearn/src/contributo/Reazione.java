@@ -3,6 +3,8 @@ package contributo;
 import java.util.Date;
 
 import contributo.corpo.Corpo;
+import contributo.state.reazione.StatoReazione;
+
 
 public interface Reazione {
 	public int getIDCommento();
@@ -15,4 +17,8 @@ public interface Reazione {
 	public void setData(Date data);
 	public Corpo getCorpo();
 	public void setCorpo(Corpo corpo);
+	
+	public void pubblica(String stato);
+	public void setStato(StatoReazione stato);
+	public StatoReazione getStato();
 }
