@@ -347,6 +347,19 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 	}
+	public static Nodo updateNodo(Nodo nd) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = "update nodo set nome = ?, descrizione = ?, iduda = ? where idnodo = ?";
+		PreparedStatement ps =  conn.prepareStatement(sql);
+		ps.setString(1, nd.getNome());
+		ps.setString(2,nd.getDescrizione());
+		ps.setInt(3,nd.getIdUDA());
+		ps.setInt(4, nd.getIdNodo());
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+		return nd;
+	}
 	
 	
 	/*----------post-------------*/
@@ -396,6 +409,7 @@ public class DatabaseController {
 				contributo = new Sollecitazione();
 				((Sollecitazione)contributo).setDeadline(rs.getTimestamp("deadline"));
 			}
+			contributo.setIDUDA(rs.getInt("iduda"));
 			contributo.setIDNodo(rs.getInt("idnodo"));
 			contributo.setIDPartecipante(rs.getInt("idpartecipante"));
 			contributo.setIDPost(rs.getInt("idpost"));			
@@ -417,7 +431,6 @@ public class DatabaseController {
 		while (rs.next()){
 			Azione contributo = new Post();;
 			Timestamp deadline = rs.getTimestamp("deadline");
-			System.out.println("deadline: "+deadline.toString());
 			if(deadline!=null){
 				System.out.println("creo una sollecitazione");
 				contributo = new Sollecitazione();
@@ -439,6 +452,33 @@ public class DatabaseController {
 		ps.close();
 		conn.close();
 		return contributoNodo;
+	}
+	
+	public static Azione updateAzione(Azione azione) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "update post set visibility=?, testo=?, data=?, stato=?, idplugin=? where idpost = ?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, azione.getVisibilita());
+		ps.setString(2, azione.getCorpo().getText());
+		Timestamp t= new Timestamp(azione.getData().getTime());
+		ps.setTimestamp(3,t);
+		ps.setString(4, azione.getStato().getState());
+		if(azione.getCorpo().hasPlugin())ps.setInt(5, ((Artefatto)azione).getIdPlugin());
+		else ps.setNull(5, Types.INTEGER);
+		ps.setInt(6, azione.getIDPost());
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+		return azione;
+	}
+	public static void deleteAzione(int idAzione) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "delete from post where idpost=?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idAzione);
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
 	}
 	
 	/*------------------Commento-------------------*/
@@ -510,6 +550,31 @@ public class DatabaseController {
 		return commentiPost;
 	}
 	
+	public static void deleteReazione(int idCommento) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "delete from commento where idcommento=?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idCommento);
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+	}
+	public static Reazione updateReazione(Reazione reazione) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd); 
+		String sql = "update commento set testo=?, data=?, idplugin=? where idcommento = ? ";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setString(1, reazione.getCorpo().getText());
+		Timestamp t= new Timestamp(reazione.getData().getTime());
+		ps.setTimestamp(2,t);
+		if(reazione.getCorpo().hasPlugin())ps.setInt(3, ((Artefatto)reazione).getIdPlugin());
+		else ps.setNull(3, Types.INTEGER);
+		ps.setInt(4, reazione.getIDCommento());
+		ps.executeUpdate();
+		ps.close();
+		conn.close();
+				
+		return reazione;
+	}
 	
 	
 	/*----------parteciapnte--------*/
@@ -641,6 +706,37 @@ public class DatabaseController {
 		return part;
 	}
 	
+	public static boolean isAutorePost(int idPartecipante,int idPost) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = " select * from post where idpartecipante = ? and idpost=?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idPartecipante);
+		ps.setInt(2, idPost);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			return true;
+		}
+		ps.close();
+		rs.close();
+		conn.close();
+		return false;
+	}
+	public static boolean isAutoreCommento(int idPartecipante,int idCommento) throws SQLException{
+		Connection conn = DriverManager.getConnection(url,usr,pwd);
+		String sql = " select * from commento where idpartecipante = ? and idcommento=?";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, idPartecipante);
+		ps.setInt(2, idCommento);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			return true;
+		}
+		ps.close();
+		rs.close();
+		conn.close();
+		return false;
+	}
+	
 	
 	/*-------valutazione------------*/
 	
@@ -713,6 +809,9 @@ public class DatabaseController {
 			((Risposta)reazione).setValutazione(valutazione);
 			risposteValutate.add(reazione);
 		}
+		ps.close();
+		rs.close();
+		conn.close();
 		return risposteValutate;
 	}
 	

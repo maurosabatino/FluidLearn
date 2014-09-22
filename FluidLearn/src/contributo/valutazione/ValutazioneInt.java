@@ -49,5 +49,11 @@ public class ValutazioneInt implements Valutazione{
 		this.idValutazione = idValutazione;
 		
 	}
+	public boolean isLode() {
+		return lode;
+	}
+	public void setLode(boolean lode) {
+		this.lode = lode;
+	}
 	
 }

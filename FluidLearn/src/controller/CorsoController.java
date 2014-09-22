@@ -148,5 +148,11 @@ public class CorsoController {
 		int idNodo = Integer.parseInt(request.getParameter("idNodo"));
 		DatabaseController.deleteNodo(idNodo);
 	}
+	public static Nodo modificaNodo(HttpServletRequest request) throws SQLException{
+		Nodo nd = inputNodo(request);
+		String idNodo = request.getParameter("idNodo");
+		nd.setIdNodo(Integer.parseInt(idNodo));
+		return DatabaseController.updateNodo(nd);
+	}
 	
 }

@@ -1,5 +1,7 @@
 package partecipante;
 
+import java.sql.SQLException;
+
 
 public interface Partecipante {
 	public int getIDPartecipante();
@@ -13,8 +15,8 @@ public interface Partecipante {
 	public String getPassword();
 	public void setPassword(String password);
 
-	public boolean isAutorePost(int IDPost);
-	public boolean isAutoreCommento(int IDCommento);
+	public boolean isAutorePost(int IDPost) throws SQLException;
+	public boolean isAutoreCommento(int IDCommento) throws SQLException;
 	public boolean hasRole(Role r);
 	public boolean isDecorated();
 }

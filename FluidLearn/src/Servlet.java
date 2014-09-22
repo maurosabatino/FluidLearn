@@ -170,6 +170,31 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
+		else if(operazione.equals("formModificaUDA")){
+			String content = HtmlUDA.formModificaUDA(Integer.parseInt(request.getParameter("idUDA")));
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("modificaUDA")){
+			UnitaDA UDA = CorsoController.modificaUDA(request);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlUDA.mostraUDA(UDA.getIdUDA(),part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("eliminaUDA")){
+			CorsoController.deleteUDA(request);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlCorso.mostraCorso(Integer.parseInt(request.getParameter("idCorso")), part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
 		else if(operazione.equals("formInserisciNodo")){
 			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
 			String content = HtmlNodo.formInsertNodo(idUDA);
@@ -230,8 +255,30 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
+		else if(operazione.equals("formModificaNodo")){
+			String content = HtmlNodo.formModificaNodo(Integer.parseInt(request.getParameter("idNodo")));
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("modificaNodo")){
+			Nodo nd = CorsoController.modificaNodo(request);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlNodo.mostraNodo(nd.getIdNodo(), part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
 		else if(operazione.equals("eliminaNodo")){
 			CorsoController.eliminaNodo(request);
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			String content = HtmlUDA.mostraUDA(Integer.parseInt(request.getParameter("idUDA")), part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
 		}
 		else if(operazione.equals("inserisciPost")){
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
@@ -242,17 +289,86 @@ public class Servlet extends HttpServlet {
 			request.setAttribute("HTMLc", c);
 			forward(request,response,"/corso.jsp");
 		}
-		
+		else if(operazione.equals("eliminaAzione")){
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			Azione post = ContributoController.eliminaAzione(request, part);
+			String content="";
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			if(idNodo==0) content = HtmlUDA.mostraUDA(idUDA, part);
+			else content = HtmlNodo.mostraNodo(post.getIDNodo(), part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formModificaAzione")){
+			
+			int idPost = Integer.parseInt(request.getParameter("idPost"));
+			String content = HtmlContributo.formModificaPost(idPost);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("modificaAzione")){
+			
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			Azione post = ContributoController.modificaAzione(request, part);
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			String content="";
+			if(idNodo==0) content = HtmlUDA.mostraUDA(idUDA, part);
+			else content = HtmlNodo.mostraNodo(idNodo, part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
 		else if(operazione.equals("inserisciReazione")){
 			Partecipante part = (Partecipante)session.getAttribute("partecipante");
 			ContributoController.nuovaReazione(request,part.getIDPartecipante());
 			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
 			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
-			System.out.println("iduda "+idUDA);
-			System.out.println("idnodo "+idNodo);
 			String content = "";
 			if(idNodo!=0) content = HtmlNodo.mostraNodo(idNodo,part);
 			else content = HtmlUDA.mostraUDA(idUDA, part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("eliminaReazione")){
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			ContributoController.eliminaReazione(request, part);
+			String content="";
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			if(idNodo==0) content = HtmlUDA.mostraUDA(idUDA, part);
+			else content = HtmlNodo.mostraNodo(idNodo, part);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("formModificaReazione")){
+			Azione post = DatabaseController.selectPost(Integer.parseInt(request.getParameter("idPost")));
+			int idCommento = Integer.parseInt(request.getParameter("idCommento"));
+			String content = HtmlContributo.formModificaCommento(post, idCommento);
+			HtmlContent c = new HtmlContent();
+			c.setContent(content);
+			request.setAttribute("HTMLc", c);
+			forward(request,response,"/corso.jsp");
+		}
+		else if(operazione.equals("modificaReazione")){
+			
+			Partecipante part = (Partecipante)session.getAttribute("partecipante");
+			Reazione commento = ContributoController.modificaReazione(request, part);
+			int idNodo = Integer.parseInt(request.getParameter("idNodo"));
+			int idUDA = Integer.parseInt(request.getParameter("idUDA"));
+			String content="";
+			if(idNodo==0) content = HtmlUDA.mostraUDA(idUDA, part);
+			else content = HtmlNodo.mostraNodo(idNodo, part);
 			HtmlContent c = new HtmlContent();
 			c.setContent(content);
 			request.setAttribute("HTMLc", c);

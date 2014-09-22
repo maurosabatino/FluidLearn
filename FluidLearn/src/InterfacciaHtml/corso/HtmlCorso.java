@@ -60,7 +60,7 @@ public class HtmlCorso {
 		sb.append("      </a>                                                                   ");
 		sb.append("   </li>                                                                     ");
 		sb.append("   <li><a href=\"#UDA\" data-toggle=\"tab\">Unità di apprendimento</a></li>                   ");
-		if(part!=null && part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#gestCorso\" data-toggle=\"tab\">Gestione del Corso</a></li>             ");
+		if(part!=null && (part.hasRole(Role.DOCENTE)||part.hasRole(Role.AMMINISTRATORE))) sb.append("   <li><a href=\"#gestCorso\" data-toggle=\"tab\">Gestione del Corso</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
 		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");

@@ -1,5 +1,9 @@
 package partecipante;
 
+import java.sql.SQLException;
+
+import controller.DatabaseController;
+
 public class Esaminatore implements Ruolo{
 	Partecipante part;
 	public Esaminatore(Partecipante p){
@@ -35,15 +39,13 @@ public class Esaminatore implements Ruolo{
 		
 	}
 	@Override
-	public boolean isAutorePost(int IDPost) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isAutorePost(int IDPost) throws SQLException {
+		return part.isAutorePost(IDPost);
 	}
 
 	@Override
-	public boolean isAutoreCommento(int IDCommento) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isAutoreCommento(int IDCommento) throws SQLException {
+		return part.isAutoreCommento(IDCommento);
 	}
 
 	@Override

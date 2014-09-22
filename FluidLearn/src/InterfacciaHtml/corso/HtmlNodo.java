@@ -94,7 +94,7 @@ public class HtmlNodo {
 		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
 		sb.append("   <li><a href=\"#sollecitazioni\" data-toggle=\"tab\">Sollecitazioni</a></li>                   ");
 		sb.append("   <li><a href=\"#risorse\" data-toggle=\"tab\">Risorse</a></li>             ");
-		if(part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#gestNodo\" data-toggle=\"tab\">Gestione Nodo</a></li>             ");
+		if(part.hasRole(Role.DOCENTE)||part.hasRole(Role.AMMINISTRATORE)) sb.append("   <li><a href=\"#gestNodo\" data-toggle=\"tab\">Gestione Nodo</a></li>             ");
 		if(nd.isComposite()) sb.append("   <li><a href=\"#ElNodi\" data-toggle=\"tab\">Sotto nodi</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
@@ -107,7 +107,7 @@ public class HtmlNodo {
 		sb.append("      <p> "+HtmlContributo.mostraPost(nd.getIdUDA(),idNodo,part)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"sollecitazioni\">                                 ");
-		if(part.hasRole(Role.DOCENTE))
+		if(part.hasRole(Role.DOCENTE)||part.hasRole(Role.ESAMINATORE))
 			sb.append(HtmlContributo.formInputSollecitazione(nd.getIdUDA(), idNodo));
 		sb.append("  <p> "+HtmlContributo.mostraSollecitazioni(nd.getIdUDA(),idNodo,part)+" </p> ");	
 		sb.append("   </div>                                                                    ");
@@ -115,7 +115,8 @@ public class HtmlNodo {
 		sb.append("      <p> </p>																");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"gestNodo\">                              ");
-		sb.append("<a href=\"Servlet?operazione=eliminaNodo&idNodo="+idNodo+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> elimina Nodo</a>");
+		sb.append("<a href=\"Servlet?operazione=formModificaNodo&idNodo="+idNodo+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> Modifica Nodo</a>");
+		sb.append("<a href=\"Servlet?operazione=eliminaNodo&idNodo="+idNodo+"&idUDA="+nd.getIdUDA()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> Elimina Nodo</a>");
 		sb.append("<a href=\"Servlet?operazione=formInserisciNodoLeaf&idNodoPadre="+idNodo+"&idUDA="+nd.getIdUDA()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> aggiungi nodo figlio</a>");
 		sb.append("   </div>                                                                    ");
 		if(nd.isComposite()){
@@ -148,6 +149,27 @@ public class HtmlNodo {
 		}
 		
 		return sb.toString();	
+	}
+	public static String formModificaNodo(int idNodo) throws SQLException{
+		StringBuilder sb = new StringBuilder();
+		Nodo nd = DatabaseController.selectNodo(idNodo);
+		sb.append("<form action=\"Servlet\" name=\"dati\" method=\"POST\" role=\"form\">");
+		sb.append("<div class=\"panel panel-default\"> <div class=\"panel-body\"> <h4>Modific nodo</h4>");
+		sb.append("<div class=\"row\">");
+		sb.append("<div class=\"col-xs-6 col-md-6\"><label for=\"nome\">Nome Del Nodo</label> <input type=\"text\" name=\"nome\" id=\"nome\" class=\"form-control\" placeholder=\"nome\" value=\""+nd.getNome()+"\" ></div>");
+		sb.append("</div>");
+		
+		sb.append("<br><div class=\"wrapper\">");
+		sb.append("<div class=\"content-main\"><label for=\"descrizione\">Descrizione</label></div>");
+		sb.append("<div class=\"content-secondary\"><textarea rows=\"5\" cols=\"140\" name=\"descrizione\" id=\"descrizione\" class=\"textarea\" placeholder=\"Descrizione\">"+nd.getDescrizione()+"</textarea></div>");
+		sb.append("</div>");
+		sb.append("<input type=\"hidden\" name=\"idNodo\" value=\""+nd.getIdNodo()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idUDA\" value=\""+nd.getIdUDA()+"\">");
+		sb.append("<input type=\"hidden\" name=\"operazione\" value=\"modificaNodo\">");
+		sb.append("<input type=\"submit\" name =\"submit\" value=\"OK\">");
+		sb.append("</div> </div>");
+		sb.append("</form>");
+		return sb.toString();
 	}
 	
 }

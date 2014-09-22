@@ -1,6 +1,7 @@
 package InterfacciaHtml.corso;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import InterfacciaHtml.HtmlContributo;
@@ -29,6 +30,11 @@ public class HtmlUDA {
 		sb.append("<input type=\"submit\" name =\"submit\" value=\"OK\">");
 		sb.append("</div> </div>");
 		sb.append("</form>");
+		sb.append("<script>                              ");
+	  sb.append("$(function() {                        ");
+	  sb.append("  $( \"#dataAttivazione\" ).datepicker({ dateFormat: \"yy-mm-dd\" });    ");
+	  sb.append("});                                   ");
+	  sb.append("</script>                             ");
 		return sb.toString();
 	}
 	
@@ -44,7 +50,7 @@ public class HtmlUDA {
 		sb.append("   </li>                                                                     ");
 		sb.append("   <li><a href=\"#post\" data-toggle=\"tab\">Post</a></li>                   ");
 		sb.append("   <li><a href=\"#nodi\" data-toggle=\"tab\">Nodi</a></li>                   ");
-		if(part!=null && part.hasRole(Role.DOCENTE)) sb.append("   <li><a href=\"#gestUDA\" data-toggle=\"tab\">Gestione dell'unità di apprendimento</a></li>             ");
+		if(part!=null && (part.hasRole(Role.DOCENTE)||part.hasRole(Role.AMMINISTRATORE))) sb.append("   <li><a href=\"#gestUDA\" data-toggle=\"tab\">Gestione dell'unità di apprendimento</a></li>             ");
 		sb.append("</ul>                                                                        ");
 		sb.append("<div id=\"myTabContent\" class=\"tab-content\">                              ");
 		sb.append("   <div class=\"tab-pane fade in active\" id=\"home\">                       ");
@@ -52,7 +58,6 @@ public class HtmlUDA {
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"post\">                                 ");
 		sb.append(HtmlContributo.formInputPost(idUDA, 0));
-		
 		sb.append("      <p> "+HtmlContributo.mostraPost(idUDA,0,part)+" </p>                     ");
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"nodi\">                                 ");
@@ -60,8 +65,8 @@ public class HtmlUDA {
 		sb.append("   </div>                                                                    ");
 		sb.append("   <div class=\"tab-pane fade\" id=\"gestUDA\">                              ");
 		sb.append("      <p>																");
-		//sb.append("<a href=\"Servlet?operazione=formModificaCorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> modifica</a>");
-		//sb.append("<a href=\"Servlet?operazione=eliminaCorso&idCorso="+c.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> elimina</a>");
+		sb.append("<a href=\"Servlet?operazione=formModificaUDA&idUDA="+UDA.getIdUDA()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> modifica</a>");
+		sb.append("<a href=\"Servlet?operazione=eliminaUDA&idUDA="+idUDA+"&idCorso="+UDA.getIdCorso()+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> elimina</a>");
 		sb.append("<a href=\"Servlet?operazione=formInserisciNodo&idUDA="+idUDA+"\" class=\"btn btn-primary btn-lg\" role=\"submit\"> aggiungi Nodo</a>");
 		sb.append("      </p>																	");
 		sb.append("   </div>                                                                    ");
@@ -97,6 +102,35 @@ public class HtmlUDA {
 		}
 		
 		return sb.toString();		
+	}
+	
+	public static String formModificaUDA(int idUDA) throws SQLException{
+		StringBuilder sb = new StringBuilder();
+		UnitaDA UDA = DatabaseController.selectUDA(idUDA);
+		sb.append("<form action=\"Servlet\" name=\"dati\" method=\"POST\" role=\"form\">");
+		sb.append("<div class=\"panel panel-default\"> <div class=\"panel-body\"> <h4>Modifica l'UDA</h4>");
+		sb.append("<div class=\"row\">");
+		sb.append("<div class=\"col-xs-6 col-md-6\"><label for=\"nome\">Nome Del UDA</label> <input type=\"text\" name=\"nome\" id=\"nome\" class=\"form-control\" placeholder=\"nome\" value=\""+UDA.getNome()+"\" ></div>");
+		sb.append("</div>");
+		sb.append("<div class=\"row\">");
+		sb.append("<div class=\"col-xs-6 col-md-6\"><label for=\"dataAttivazione\">data di attivazione</label> <input type=\"text\" name=\"dataAttivazione\" id=\"dataAttivazione\" class=\"form-control\" placeholder=\"yyyy-MM-dd\" value=\""+new SimpleDateFormat("yyyy-MM-dd").format(UDA.getData())+"\"></div>");
+		sb.append("</div>");
+		sb.append("<br><div class=\"wrapper\">");
+		sb.append("<div class=\"content-main\"><label for=\"descrizione\">Descrizione</label></div>");
+		sb.append("<div class=\"content-secondary\"><textarea rows=\"5\" cols=\"140\" name=\"descrizione\" id=\"descrizione\" class=\"textarea\" placeholder=\"Descrizione\">"+UDA.getDescrizione()+"</textarea></div>");
+		sb.append("</div>");
+		sb.append("<input type=\"hidden\" name=\"idCorso\" value=\""+UDA.getIdCorso()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idUDA\" value=\""+idUDA+"\">");
+		sb.append("<input type=\"hidden\" name=\"operazione\" value=\"modificaUDA\">");
+		sb.append("<input type=\"submit\" name =\"submit\" value=\"Modifica\">");
+		sb.append("</div> </div>");
+		sb.append("</form>");
+		sb.append("<script>                              ");
+	  sb.append("$(function() {                        ");
+	  sb.append("  $( \"#dataAttivazione\" ).datepicker({ dateFormat: \"yy-mm-dd\" });    ");
+	  sb.append("});                                   ");
+	  sb.append("</script>                             ");
+		return sb.toString();
 	}
 	public static String mostraPercorsoDiApprendimmento(int idCorso) throws SQLException{
 		StringBuilder sb = new StringBuilder();

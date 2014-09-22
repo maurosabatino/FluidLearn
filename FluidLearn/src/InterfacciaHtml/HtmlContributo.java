@@ -92,8 +92,16 @@ public class HtmlContributo {
 				sb.append("</div> ");
 				sb.append("</div> ");
 				sb.append("<div class=\"row\">");
-				sb.append("<div class=\" col-md-8 col-md-offset-1\">");
-				sb.append("<p>"+azione.getCorpo().getText()+"</p>");
+				sb.append("<div class=\" col-md-8 col-md-offset-1 text-block\">");
+				sb.append("<p class=\"bd\">"+azione.getCorpo().getText()+"</p>");
+				sb.append("</div> ");
+				sb.append("</div> ");
+				sb.append("<div class=\"row\">");
+				sb.append("<div class=\" col-md-8 col-md-offset-4\">");
+				if(part.isAutorePost(azione.getIDPost())){
+					sb.append("<a href=\"Servlet?operazione=eliminaAzione&idPost="+azione.getIDPost()+"&idNodo="+azione.getIDNodo()+"&idUDA="+azione.getIDUDA()+"\" role=\"submit\"><footer>Elimina</footer></a>");
+					sb.append("<a href=\"Servlet?operazione=formModificaAzione&idPost="+azione.getIDPost()+"\" role=\"submit\"><footer>Modifica</footer></a>");
+				}
 				sb.append("</div> ");
 				sb.append("</div> ");
 				sb.append("</div> ");
@@ -109,6 +117,50 @@ public class HtmlContributo {
 		
 		return sb.toString();		
 	}
+	public static String formModificaPost(int idPost) throws SQLException{
+		StringBuilder sb = new StringBuilder();
+		Azione post = DatabaseController.selectPost(idPost);
+		sb.append("<form action=\"Servlet\" name=\"dati\" method=\"POST\" role=\"form\">");
+		sb.append("<div class=\"row\">                                                                                                                         ");
+		sb.append("  <div class=\"col-md-6\">                                                                                                                  ");
+		sb.append("<div class=\"panel panel-default\">                                                                                                         ");
+		sb.append("  <div class=\"panel-heading\">                                                                                                             ");
+		sb.append("    <h3 class=\"panel-title\">Modifica Post</h3>                                                                                             ");
+		sb.append("  </div>                                                                                                                                  ");
+		sb.append("  <div class=\"panel-body\">                                                                                                                ");
+		sb.append("  <textarea class=\"form-control\" rows=\"5\" name=\"testo\"></textarea>                                                                                    ");
+		sb.append("  </div>                                                                                                                                  ");
+		sb.append("  <div class=\"panel-footer\">                                                                                                              ");
+		sb.append("  <div class=\"row\">                                                                                                                       ");
+		sb.append("  <div class=\"col-md-2\">                                                          ");                                    
+		sb.append("<select class=\"selectpicker\" data-width=\"100px\" name=\"visibilita\">");
+    sb.append("<option value=\"1\" >Privato</option>      ");
+    sb.append("<option value=\"2\">Docente</option>       ");
+    sb.append("<option value=\"3\">Classe</option>         ");
+    sb.append("</select>                                      ");                                                                           
+		sb.append("         </div>                                                                                      ");                                  
+		sb.append("          <div class=\"col-md-2\">                                                                                                        ");
+		sb.append("          <button type=\"submit\" name=\"stato\" value=\"PUBBLICA\" class=\"btn btn-primary\">Pubblica</button>                                                                     ");       
+		sb.append("          </div>                                                                                                                          ");
+		sb.append("          <div class=\"col-md-2\">                                                                                                        ");
+		sb.append("          <button type=\"submit\" name=\"stato\" value=\"DRAFT\" class=\"btn btn-primary\">Bozza</button>");                              
+		sb.append("          </div>                                                                                                                          ");
+		sb.append("   </div>                                                                                                                                 ");
+        sb.append("                                                                                                                                          ");
+		sb.append("  </div>                                                                                                                                  ");
+		sb.append("</div>                                                                                                                                    ");
+		sb.append("</div>                                                                                                                                    ");
+		sb.append("</div>                                                                                                                                    ");
+		sb.append("                                                                                                                                          ");
+		
+		sb.append("<input type=\"hidden\" name=\"idUDA\" value=\""+post.getIDUDA()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idNodo\" value=\""+post.getIDNodo()+"\">");
+		sb.append("<input type=\"hidden\" name=\"operazione\" value=\"modificaPost\">");
+		
+		
+		sb.append("</form>");
+		return sb.toString();
+	}
 	
 	/*commento*/
 	public static String formInputCommento(Azione post){
@@ -120,9 +172,10 @@ public class HtmlContributo {
 		sb.append("<div class=\"row\">");
 		
 		sb.append("<div class=\"col-xs-6 col-md-6\"> <input type=\"text\" name=\"testo\" id=\"testo\" class=\"form-control\" placeholder=\"testo del commento\" ></div>");
-		if(post.hasDeadline()) sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Rispondi</button>");
+		sb.append("<div class=\"col-xs-6 col-md-6\">");
+		if(post.hasDeadline()) sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Rispondi</button></div>");
 		
-		else sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Commenta</button>");
+		else sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Commenta</button></div>");
 		sb.append("</div>");
 		sb.append("<input type=\"hidden\" name=\"idUDA\" value=\""+post.getIDUDA()+"\">");
 		sb.append("<input type=\"hidden\" name=\"idNodo\" value=\""+post.getIDNodo()+"\">");
@@ -140,6 +193,9 @@ public class HtmlContributo {
 			
 			Partecipante utente = DatabaseController.selectPartecipante(commento.getIDPartecipante());
 			sb.append("<li class=\"bd\"><strong class=\"img\">"+utente.getNome()+"  </strong> "+commento.getCorpo().getText()+"");
+			if(part.isAutoreCommento(commento.getIDCommento())){
+				sb.append("<li><a href=\"Servlet?operazione=eliminaReazione&idCommento="+commento.getIDCommento()+"&idNodo="+post.getIDNodo()+"&idUDA="+post.getIDUDA()+"\" role=\"submit\"><footer>Elimina</footer></a><a href=\"Servlet?operazione=formModificaReazione&idCommento="+commento.getIDCommento()+"&idPost="+post.getIDPost()+"\" role=\"submit\"><footer>Modifica</footer></a></li>");
+			}
 			sb.append("</li>");
 			
 			if(post.hasDeadline()&&(part.hasRole(Role.ESAMINATORE)||part.hasRole(Role.DOCENTE))){
@@ -155,7 +211,26 @@ public class HtmlContributo {
 		
 		return sb.toString();		
 	}
-
+	
+	public static String formModificaCommento(Azione post,int idCommento) throws SQLException{
+		StringBuilder sb = new StringBuilder();
+		Reazione commento = DatabaseController.selectCommento(idCommento);
+		sb.append("<form action=\"Servlet\" name=\"dati\" method=\"POST\" role=\"form\">");
+		sb.append("<div class=\"row\">");
+		sb.append("<div class=\"col-xs-6 col-md-6\"> <input type=\"text\" name=\"testo\" id=\"testo\" class=\"form-control\" placeholder=\"testo del commento\" value=\""+commento.getCorpo().getText()+"\"></div>");
+		if(post.hasDeadline()) sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Rispondi</button>");
+		
+		else sb.append("	<button type=\"submit\" class=\"btn btn-primary\">Commenta</button>");
+		sb.append("</div>");
+		sb.append("<input type=\"hidden\" name=\"idUDA\" value=\""+post.getIDUDA()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idNodo\" value=\""+post.getIDNodo()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idPost\" value=\""+post.getIDPost()+"\">");
+		sb.append("<input type=\"hidden\" name=\"idCommento\" value=\""+idCommento+"\">");
+		sb.append("<input type=\"hidden\" name=\"operazione\" value=\"modificaReazione\">");                                                                                                     		 
+		sb.append("</form>");
+		
+		return sb.toString();
+	}
 	/*----sollecitazione----*/
 	/**
 	 * 

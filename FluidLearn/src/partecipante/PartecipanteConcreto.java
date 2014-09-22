@@ -1,5 +1,9 @@
 package partecipante;
 
+import java.sql.SQLException;
+
+import controller.DatabaseController;
+
 public class PartecipanteConcreto implements Partecipante{
 	int idPartecipante;
 	
@@ -28,15 +32,13 @@ public class PartecipanteConcreto implements Partecipante{
 	}
 
 	@Override
-	public boolean isAutorePost(int IDPost) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isAutorePost(int IDPost) throws SQLException {
+		return DatabaseController.isAutorePost(idPartecipante,IDPost);
 	}
 
 	@Override
-	public boolean isAutoreCommento(int IDCommento) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isAutoreCommento(int IDCommento) throws SQLException {
+		return DatabaseController.isAutoreCommento(idPartecipante,IDCommento);
 	}
 
 	@Override
